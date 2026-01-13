@@ -1,19 +1,39 @@
-import { defineNuxtModule, addPlugin, createResolver } from '@nuxt/kit'
-
-// Module options TypeScript interface definition
-export interface ModuleOptions {}
+import { defineNuxtModule, createResolver, addServerImportsDir, addServerHandler } from '@nuxt/kit'
+import { defu } from 'defu'
+import type { ModuleOptions } from './types'
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: 'my-module',
-    configKey: 'myModule',
+    name: 'nuxt-transport-mailer',
+    configKey: 'transportMailer',
   },
-  // Default configuration options of the Nuxt module
-  defaults: {},
-  setup(_options, _nuxt) {
+  defaults: {
+    driver: 'smtp',
+    smtp: {
+      host: 'localhost',
+      port: 2525,
+      secure: false,
+    },
+    defaults: {
+      from: '',
+    },
+    serverApi: {
+      enabled: false,
+      route: '/api/mail/send',
+    },
+  },
+  setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // Do not add the extension since the `.ts` will be transpiled to `.mjs` after `npm run prepack`
-    addPlugin(resolver.resolve('./runtime/plugin'))
+    nuxt.options.runtimeConfig.transportMailer = defu(nuxt.options.runtimeConfig.transportMailer, options)
+
+    addServerImportsDir(resolver.resolve('./runtime/server/utils'))
+
+    if (options.serverApi?.enabled) {
+      addServerHandler({
+        route: options.serverApi.route || '/api/mail/send',
+        handler: resolver.resolve('./runtime/server/api/send.post'),
+      })
+    }
   },
 })

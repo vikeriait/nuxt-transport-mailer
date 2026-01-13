@@ -1,8 +1,12 @@
 {
-  "name": "nuxt-transport-mailer",
+  "name": "@vikeriait/nuxt-transport-mailer",
   "version": "1.0.0",
   "description": "My new Nuxt module",
-  "repository": "your-org/my-module",
+  "homepage": "https://nuxt-transport-mailer.vikeria.it",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vikeriait/nuxt-transport-mailer"
+  },
   "license": "MIT",
   "type": "module",
   "exports": {
@@ -34,7 +38,9 @@
     "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit"
   },
   "dependencies": {
-    "@nuxt/kit": "^4.2.2"
+    "@nuxt/kit": "^4.2.2",
+    "defu": "^6.1.4",
+    "nodemailer": "^7.0.12"
   },
   "devDependencies": {
     "@nuxt/devtools": "^3.1.1",
@@ -43,10 +49,12 @@
     "@nuxt/schema": "^4.2.2",
     "@nuxt/test-utils": "^3.22.0",
     "@types/node": "latest",
+    "@types/nodemailer": "^7.0.5",
     "changelogen": "^0.6.2",
     "eslint": "^9.39.2",
     "nuxt": "^4.2.2",
     "typescript": "~5.9.3",
+    "vitepress": "^1.6.4",
     "vitest": "^4.0.16",
     "vue-tsc": "^3.2.2"
   }
