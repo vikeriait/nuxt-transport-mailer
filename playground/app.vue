@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { TransportMailerError } from '../src/types'
+import type { FetchError } from 'ofetch'
 
 const form = ref({
-  to: '',
+  to: 'test@example.com',
   subject: 'Test Email from Nuxt Transport Mailer',
   text: 'Hello! This is a test email sent from the playground.',
 })
@@ -24,10 +25,10 @@ async function sendEmail() {
     responseMessage.value = 'Email sent successfully! Check your inbox (or trap).'
   }
   catch (error: unknown) {
-    const err = error as TransportMailerError
+    const err = (error as FetchError).data as TransportMailerError
     console.error('Error sending email:', err)
     status.value = 'error'
-    responseMessage.value = err.data?.message || err.statusMessage || 'Failed to send email.'
+    responseMessage.value = err.message || err.statusMessage || 'Failed to send email.'
   }
 }
 </script>

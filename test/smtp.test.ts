@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, it, expect } from 'vitest'
 import { setup, $fetch } from '@nuxt/test-utils/e2e'
 import type { TransportMailerError } from '../src/types'
+import type { FetchError } from 'ofetch'
 
 describe('nuxt-transport-mailer smtp driver', async () => {
   await setup({
@@ -20,9 +21,9 @@ describe('nuxt-transport-mailer smtp driver', async () => {
       })
     }
     catch (error: unknown) {
-      const err = error as TransportMailerError
+      const err = (error as FetchError).data as TransportMailerError
       expect(err.statusCode).toBe(500)
-      expect(err.data?.message).toContain('SMTP Transport failed')
+      expect(err.message).toContain('SMTP Transport failed')
     }
   })
 })

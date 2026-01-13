@@ -51,7 +51,6 @@ export interface ModuleOptions {
 export interface TransportMailerError {
   statusCode: number
   statusMessage?: string
-  data?: {
-    message?: string
-  }
+  message?: string
+  data?: unknown
 }

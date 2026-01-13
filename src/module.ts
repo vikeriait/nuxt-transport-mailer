@@ -27,13 +27,13 @@ export default defineNuxtModule<ModuleOptions>({
 
     nuxt.options.runtimeConfig.transportMailer = defu(nuxt.options.runtimeConfig.transportMailer, options)
 
-    addServerImportsDir(resolver.resolve('./runtime/server/utils'))
-
     if (options.serverApi?.enabled) {
       addServerHandler({
         route: options.serverApi.route || '/api/mail/send',
         handler: resolver.resolve('./runtime/server/api/send.post'),
       })
     }
+
+    addServerImportsDir(resolver.resolve('./runtime/server/utils'))
   },
 })
