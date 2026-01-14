@@ -30,3 +30,11 @@ export const emailConfigurationSchema = baseEmailSchema.safeExtend({
 
 export type EmailBody = z.infer<typeof emailBodySchema>
 export type EmailConfiguration = z.infer<typeof emailConfigurationSchema>
+
+export const captchaVerificationSchema = z.object({
+  token: z.string('Captcha token is required').min(1, 'Captcha token is required'),
+  provider: z.enum(['turnstile', 'recaptcha', 'hcaptcha'], 'Captcha provider not valid'),
+  secretKey: z.string('Captcha secretKey is required').min(1, 'Captcha secretKey is required'),
+})
+
+export type CaptchaVerification = z.infer<typeof captchaVerificationSchema>

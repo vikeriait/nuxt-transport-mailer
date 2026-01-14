@@ -1,7 +1,9 @@
 import type { H3Error } from 'h3'
+import { defineEventHandler, readBody, createError } from 'h3'
 import { z } from 'zod'
 import { useRuntimeConfig } from '#imports'
 import { sendMail } from '../utils/mail'
+import { verifyCaptcha } from '../utils/captcha'
 import type { ModuleOptions } from '../../../types'
 
 export default defineEventHandler(async (event) => {
@@ -15,6 +17,9 @@ export default defineEventHandler(async (event) => {
     if (body?._gotcha) {
       return { success: true, message: 'Sent' }
     }
+
+    // Captcha Verification
+    await verifyCaptcha(event, body?.captchaToken, security)
 
     const result = await sendMail(body)
 

@@ -42,6 +42,33 @@ export interface ModuleOptions {
      */
     route?: string
   }
+
+  /**
+   * Security settings for the public API endpoint.
+   */
+  security?: {
+    /**
+     * Captcha configuration.
+     */
+    captcha?: {
+      /**
+       * Enable captcha verification.
+       * @default false
+       */
+      enabled?: boolean
+
+      /**
+       * Captcha provider.
+       * Supported: 'turnstile', 'recaptcha', 'hcaptcha'.
+       */
+      provider?: 'turnstile' | 'recaptcha' | 'hcaptcha'
+
+      /**
+       * Secret key for the captcha provider.
+       */
+      secretKey?: string
+    }
+  }
 }
 
 /**

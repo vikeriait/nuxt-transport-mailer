@@ -21,6 +21,13 @@ export default defineNuxtModule<ModuleOptions>({
       enabled: false,
       route: '/api/mail/send',
     },
+    security: {
+      captcha: {
+        enabled: false,
+        provider: undefined,
+        secretKey: undefined,
+      },
+    },
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
