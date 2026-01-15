@@ -1,0 +1,22 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="50" y="70" width="300" height="200" rx="16" fill="#34495E" stroke="#2C3E50" stroke-width="2"/>
+
+  <path d="M51 86C51 77.7157 57.7157 71 66 71H334C342.284 71 349 77.7157 349 86V110H51V86Z" fill="#00DC82"/>
+
+  <circle cx="75" cy="90" r="4" fill="#003E25"/>
+  <circle cx="90" cy="90" r="4" fill="#003E25"/>
+  <circle cx="105" cy="90" r="4" fill="#003E25"/>
+
+  <rect x="52" y="110" width="296" height="158" rx="14" fill="url(#gradienteSfondo)" fill-opacity="0.8"/>
+
+  <g transform="translate(150, 130)" fill="#FFFFFF" fill-opacity="0.9">
+    <path d="M92 7H8C3.58 7 0 10.58 0 15V85C0 89.42 3.58 93 8 93H92C96.42 93 100 89.42 100 85V15C100 10.58 96.42 7 92 7ZM90 15L50 40L10 15H90ZM10 85V20L50 45L90 20V85H10Z"/>
+  </g>
+
+  <defs>
+    <linearGradient id="gradienteSfondo" x1="200" y1="110" x2="200" y2="270" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#35495E"/>
+      <stop offset="1" stop-color="#0B1015"/>
+    </linearGradient>
+  </defs>
+</svg>

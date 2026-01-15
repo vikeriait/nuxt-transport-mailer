@@ -1,11 +1,11 @@
 {
   "name": "@vikeriait/nuxt-transport-mailer",
   "version": "1.0.0",
-  "description": "My new Nuxt module",
+  "description": "Robust Nuxt module for sending emails with Nodemailer, featuring built-in API, Zod validation, Captcha protection, and Rate Limiting.",
   "homepage": "https://nuxt-transport-mailer.vikeria.it",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vikeriait/nuxt-transport-mailer"
+    "url": "git+https://github.com/vikeriait/nuxt-transport-mailer.git"
   },
   "license": "MIT",
   "type": "module",
@@ -36,7 +36,10 @@
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:watch": "vitest watch",
-    "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit"
+    "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
     "@nuxt/kit": "^4.2.2",
@@ -57,7 +60,8 @@
     "nuxt": "^4.2.2",
     "nuxt-security": "2.5.0",
     "typescript": "~5.9.3",
-    "vitepress": "^1.6.4",
+    "vitepress": "2.0.0-alpha.15",
+    "vitepress-plugin-group-icons": "^1.6.5",
     "vitest": "^4.0.16",
     "vue-tsc": "^3.2.2",
     "zod": "^4.3.5"

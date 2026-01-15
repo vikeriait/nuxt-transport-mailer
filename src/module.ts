@@ -9,6 +9,10 @@ import { defu } from 'defu'
 import type { ModuleOptions } from './types'
 import { setupServerApi } from './lib/server-api'
 
+/**
+ * Nuxt module for sending emails via various transports (SMTP, etc.) with support for server-side API,
+ * captcha protection, and rate limiting.
+ */
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'nuxt-transport-mailer',

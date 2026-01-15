@@ -4,6 +4,14 @@ import type { ModuleOptions } from '../../../types'
 import { captchaVerificationSchema } from './schemas'
 import * as z from 'zod'
 
+/**
+ * Verifies the captcha token with the configured provider.
+ *
+ * @param event - The H3 event.
+ * @param token - The captcha token provided by the client.
+ * @param security - The security configuration from the module options.
+ * @throws Will throw a 400 error if the token is missing/invalid or if verification fails.
+ */
 export async function verifyCaptcha(event: H3Event, token: string | undefined, security: ModuleOptions['security']) {
   if (!security?.captcha?.enabled) {
     return

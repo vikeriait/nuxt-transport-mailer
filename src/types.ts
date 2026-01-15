@@ -1,30 +1,6 @@
 import type SMTPTransport from 'nodemailer/lib/smtp-transport'
 import type { NuxtSecurityRouteRules } from 'nuxt-security'
 
-type ModuleSecurityOptions = Partial<NuxtSecurityRouteRules> & {
-  /**
-   * Captcha configuration.
-   */
-  captcha?: {
-    /**
-     * Enable captcha verification.
-     * @default false
-     */
-    enabled?: boolean
-
-    /**
-     * Captcha provider.
-     * Supported: 'turnstile', 'recaptcha', 'hcaptcha'.
-     */
-    provider?: 'turnstile' | 'recaptcha' | 'hcaptcha'
-
-    /**
-     * Secret key for the captcha provider.
-     */
-    secretKey?: string
-  }
-}
-
 export interface ModuleOptions {
   /**
    * The driver to use for sending emails.
@@ -69,9 +45,32 @@ export interface ModuleOptions {
   }
 
   /**
-   * Security settings for the public API endpoint.
+   * Configuration options for the module's security features.
+   * Extends NuxtSecurityRouteRules to allow configuring security headers and other options.
    */
-  security?: ModuleSecurityOptions
+  security?: Partial<NuxtSecurityRouteRules> & {
+    /**
+     * Captcha configuration.
+     */
+    captcha?: {
+      /**
+       * Enable captcha verification.
+       * @default false
+       */
+      enabled?: boolean
+
+      /**
+       * Captcha provider.
+       * Supported: 'turnstile', 'recaptcha', 'hcaptcha'.
+       */
+      provider?: 'turnstile' | 'recaptcha' | 'hcaptcha'
+
+      /**
+       * Secret key for the captcha provider.
+       */
+      secretKey?: string
+    }
+  }
 }
 
 /**
