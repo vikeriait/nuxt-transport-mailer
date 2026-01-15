@@ -20,6 +20,10 @@ export default defineNuxtModule<ModuleOptions>({
       host: 'localhost',
       port: 2525,
       secure: false,
+      auth: {
+        user: undefined,
+        pass: undefined,
+      },
     },
     defaults: {
       from: '',
