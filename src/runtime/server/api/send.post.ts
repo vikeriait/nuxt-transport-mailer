@@ -5,13 +5,14 @@ import { useRuntimeConfig } from 'nitropack/runtime'
 import { sendMail } from '../utils/mail'
 import { verifyCaptcha } from '../utils/captcha'
 import type { ModuleOptions } from '../../../types'
+import type { EmailBody } from '../../../runtime/server/utils/schemas'
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig().transportMailer as ModuleOptions
   const security = config.security
 
   try {
-    const body = await readBody(event)
+    const body: EmailBody = await readBody(event)
 
     // Honeypot check
     if (body?._gotcha) {
@@ -20,6 +21,8 @@ export default defineEventHandler(async (event) => {
 
     // Captcha Verification
     await verifyCaptcha(event, body?.captchaToken, security)
+    delete body?.captchaToken
+    delete body?._gotcha
 
     const result = await sendMail(body)
 

@@ -3,7 +3,7 @@ import { useRuntimeConfig } from '#app'
 import type { ModuleOptions } from '../../types'
 import type { SentMessageInfo } from 'nodemailer'
 import type { FetchError } from 'ofetch'
-import type Mail from 'nodemailer/lib/mailer'
+import type { EmailBody } from '../../../src/runtime/server/utils/schemas'
 
 /**
  * Composable for sending emails via the server API endpoint.
@@ -22,7 +22,7 @@ export function useMailer() {
    * Sends an email.
    * @param mail - An object containing the mail details (to, subject, text, etc.).
    */
-  async function send(mail: Mail.Options) {
+  async function send(mail: EmailBody) {
     pending.value = true
     error.value = null
 
