@@ -1,4 +1,4 @@
-import { useRuntimeConfig } from '#imports'
+import { useRuntimeConfig } from 'nitropack/runtime'
 import type { SendMailOptions, SentMessageInfo } from 'nodemailer'
 import { defu } from 'defu'
 import type { ModuleOptions } from '../../../types'

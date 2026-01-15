@@ -1,5 +1,5 @@
 import { type Ref, ref } from 'vue'
-import { useRuntimeConfig } from '#imports'
+import { useRuntimeConfig } from '#app'
 import type { ModuleOptions } from '../../types'
 import type { SentMessageInfo } from 'nodemailer'
 import type { FetchError } from 'ofetch'

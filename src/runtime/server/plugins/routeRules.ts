@@ -1,6 +1,5 @@
 import { defu } from 'defu'
-import { defineNitroPlugin } from 'nitropack/runtime'
-import { useRuntimeConfig } from '#imports'
+import { defineNitroPlugin, useRuntimeConfig } from 'nitropack/runtime'
 import type { ModuleOptions } from '../../../types'
 import type { NuxtSecurityRouteRules } from 'nuxt-security'
 

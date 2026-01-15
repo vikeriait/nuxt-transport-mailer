@@ -1,7 +1,7 @@
 import type { H3Error } from 'h3'
 import { defineEventHandler, readBody, createError } from 'h3'
 import { z } from 'zod'
-import { useRuntimeConfig } from '#imports'
+import { useRuntimeConfig } from 'nitropack/runtime'
 import { sendMail } from '../utils/mail'
 import { verifyCaptcha } from '../utils/captcha'
 import type { ModuleOptions } from '../../../types'
