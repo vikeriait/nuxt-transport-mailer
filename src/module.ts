@@ -2,6 +2,7 @@ import {
   defineNuxtModule,
   createResolver,
   addServerImportsDir,
+  addImportsDir,
   addServerPlugin,
 } from '@nuxt/kit'
 import { defu } from 'defu'
@@ -44,9 +45,19 @@ export default defineNuxtModule<ModuleOptions>({
 
     nuxt.options.runtimeConfig.transportMailer = defu(nuxt.options.runtimeConfig.transportMailer, options)
 
+    nuxt.options.runtimeConfig.public.transportMailer = defu(
+      nuxt.options.runtimeConfig.public.transportMailer || {},
+      {
+        serverApi: {
+          route: options.serverApi?.route,
+        },
+      },
+    )
+
     setupServerApi(options, nuxt, resolver)
 
     addServerImportsDir(resolver.resolve('./runtime/server/utils'))
+    addImportsDir(resolver.resolve('./runtime/composables'))
     addServerPlugin(resolver.resolve('./runtime/server/plugins/routeRules'))
   },
 })

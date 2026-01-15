@@ -12,5 +12,8 @@ export default defineNuxtConfig({
         pass: '',
       },
     },
+    security: {
+      rateLimiter: false,
+    },
   },
 })

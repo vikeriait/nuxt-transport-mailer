@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import type { TransportMailerError } from '../src/types'
-import type { FetchError } from 'ofetch'
+import { computed, ref } from 'vue'
+import { useMailer } from '../src/runtime/composables/useMailer'
+
+const { send, pending, error, data } = useMailer()
 
 const form = ref({
   to: 'test@example.com',
@@ -8,28 +10,23 @@ const form = ref({
   text: 'Hello! This is a test email sent from the playground.',
 })
 
-const status = ref<'idle' | 'sending' | 'success' | 'error'>('idle')
-const responseMessage = ref('')
+const status = computed(() => {
+  if (pending.value) return 'sending'
+  if (error.value) return 'error'
+  if (data.value) return 'success'
+  return 'idle'
+})
 
-async function sendEmail() {
-  status.value = 'sending'
-  responseMessage.value = ''
+const responseMessage = computed(() => {
+  if (status.value === 'error')
+    return error.value?.message || error.value?.statusMessage || 'Failed to send email.'
+  if (status.value === 'success')
+    return 'Email sent successfully! Check your inbox (or trap).'
+  return ''
+})
 
-  try {
-    const res = await $fetch('/api/mail/send', {
-      method: 'POST',
-      body: form.value,
-    })
-    console.log('Email sent:', res)
-    status.value = 'success'
-    responseMessage.value = 'Email sent successfully! Check your inbox (or trap).'
-  }
-  catch (error: unknown) {
-    const err = (error as FetchError).data as TransportMailerError
-    console.error('Error sending email:', err)
-    status.value = 'error'
-    responseMessage.value = err.message || err.statusMessage || 'Failed to send email.'
-  }
+async function submit() {
+  await send(form.value)
 }
 </script>
 
@@ -41,15 +38,12 @@ async function sendEmail() {
         Playground to test your email configuration
       </p>
 
-      <form @submit.prevent="sendEmail">
+      <form @submit.prevent="submit">
         <div class="form-group">
           <label for="to">To:</label>
           <input
             id="to"
             v-model="form.to"
-            type="email"
-            placeholder="recipient@example.com"
-            required
           >
         </div>
 
@@ -65,7 +59,7 @@ async function sendEmail() {
         </div>
 
         <div class="form-group">
-          <label for="message">Message:</label>
+          <label for="message">Message (Text):</label>
           <textarea
             id="message"
             v-model="form.text"
@@ -76,10 +70,10 @@ async function sendEmail() {
 
         <button
           type="submit"
-          :disabled="status === 'sending'"
+          :disabled="pending"
           :class="status"
         >
-          {{ status === 'sending' ? 'Sending...' : 'Send Email' }}
+          {{ pending ? 'Sending...' : 'Send Email' }}
         </button>
       </form>
 
