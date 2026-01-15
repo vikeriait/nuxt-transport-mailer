@@ -1,6 +1,12 @@
-import { defineNuxtModule, createResolver, addServerImportsDir, addServerHandler } from '@nuxt/kit'
+import {
+  defineNuxtModule,
+  createResolver,
+  addServerImportsDir,
+  addServerPlugin,
+} from '@nuxt/kit'
 import { defu } from 'defu'
 import type { ModuleOptions } from './types'
+import { setupServerApi } from './lib/server-api'
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -27,6 +33,10 @@ export default defineNuxtModule<ModuleOptions>({
         provider: undefined,
         secretKey: undefined,
       },
+      rateLimiter: {
+        tokensPerInterval: 2,
+        interval: 3000000,
+      },
     },
   },
   setup(options, nuxt) {
@@ -34,13 +44,9 @@ export default defineNuxtModule<ModuleOptions>({
 
     nuxt.options.runtimeConfig.transportMailer = defu(nuxt.options.runtimeConfig.transportMailer, options)
 
-    if (options.serverApi?.enabled) {
-      addServerHandler({
-        route: options.serverApi.route || '/api/mail/send',
-        handler: resolver.resolve('./runtime/server/api/send.post'),
-      })
-    }
+    setupServerApi(options, nuxt, resolver)
 
     addServerImportsDir(resolver.resolve('./runtime/server/utils'))
+    addServerPlugin(resolver.resolve('./runtime/server/plugins/routeRules'))
   },
 })

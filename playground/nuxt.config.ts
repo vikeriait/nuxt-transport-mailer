@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ['../src/module'],
+  modules: ['../src/module', 'nuxt-security'],
   devtools: { enabled: true },
   compatibilityDate: '2025-01-12',
   transportMailer: {

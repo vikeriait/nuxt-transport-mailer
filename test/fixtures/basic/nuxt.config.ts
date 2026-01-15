@@ -3,7 +3,12 @@ import MyModule from '../../../src/module'
 export default defineNuxtConfig({
   modules: [
     MyModule,
+    'nuxt-security',
   ],
+  // @ts-expect-error: This is a known issue with type-checking test fixtures
+  security: {
+    enabled: true,
+  },
   transportMailer: {
     serverApi: {
       enabled: true,
@@ -12,8 +17,13 @@ export default defineNuxtConfig({
       from: 'test@example.com',
     },
     smtp: {
-      host: 'localhost',
-      port: 1025,
+      streamTransport: true,
+    },
+    security: {
+      corsHandler: {
+        origin: ['https://example.com'],
+        methods: ['POST', 'OPTIONS'],
+      },
     },
   },
 })
