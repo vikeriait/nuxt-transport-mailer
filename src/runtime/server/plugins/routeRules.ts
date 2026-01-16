@@ -3,6 +3,10 @@ import { defineNitroPlugin, useRuntimeConfig } from 'nitropack/runtime'
 import type { ModuleOptions } from '../../../types'
 import type { NuxtSecurityRouteRules } from 'nuxt-security'
 
+/**
+ * Nitro plugin to register Nuxt Security route rules for the mailer API endpoint.
+ * This ensures that rate limiting and other security headers are applied if configured.
+ */
 export default defineNitroPlugin(async (nitroApp) => {
   nitroApp.hooks.hook('nuxt-security:routeRules', (appSecurityOptions: Record<string, Partial<NuxtSecurityRouteRules>>) => {
     const transportMailerConfig = useRuntimeConfig().transportMailer as ModuleOptions
@@ -15,8 +19,8 @@ export default defineNitroPlugin(async (nitroApp) => {
     const { captcha, ...validNuxtSecurityOptions } = transportMailerConfig.security
 
     appSecurityOptions[apiRoute] = defu(
-      validNuxtSecurityOptions,
       appSecurityOptions[apiRoute],
+      validNuxtSecurityOptions,
     )
   })
 })
