@@ -1,19 +1,30 @@
 import type { NuxtSecurityRouteRules } from 'nuxt-security'
 import type SMTPConnection from 'nodemailer/lib/smtp-connection'
+import type { SendEmailCommandInput } from '@aws-sdk/client-sesv2'
+import type { SESv2ClientConfig } from '@aws-sdk/client-sesv2/dist-types/SESv2Client'
 
 export interface ModuleOptions {
   /**
    * The driver to use for sending emails.
-   * Currently supported: 'smtp'.
+   * Currently supported: 'smtp' | 'ses'.
    * @default 'smtp'
    */
-  driver: 'smtp'
+  driver: 'smtp' | 'ses'
 
   /**
    * SMTP transport configuration options.
    * Check Nodemailer documentation for detailed options.
    */
   smtp?: SMTPConnection.Options & { streamTransport?: boolean }
+
+  /**
+   * SES transport configuration options.
+   * Check AWS SES documentation for detailed options.
+   */
+  ses?: {
+    clientConfig?: SESv2ClientConfig
+    commandInput?: SendEmailCommandInput
+  }
 
   /**
    * Default email options applied to every email sent.

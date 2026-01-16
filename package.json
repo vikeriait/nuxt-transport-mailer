@@ -42,6 +42,7 @@
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
+    "@aws-sdk/client-sesv2": "^3.970.0",
     "@nuxt/kit": "^4.2.2",
     "@types/nodemailer": "^7.0.5",
     "defu": "^6.1.4",

@@ -2,8 +2,8 @@ import { useRuntimeConfig } from 'nitropack/runtime'
 import type { SendMailOptions, SentMessageInfo } from 'nodemailer'
 import { defu } from 'defu'
 import type { ModuleOptions } from '../../../types'
-import type Mail from 'nodemailer/lib/mailer'
 import { sendSmtp } from '../transports/smtp'
+import { sendSes } from '../transports/ses'
 import { emailConfigurationSchema } from './schemas'
 
 /**
@@ -21,13 +21,16 @@ export const sendMail = async (options: SendMailOptions): Promise<SentMessageInf
   const driver = config.driver
   const defaultOptions = config.defaults || {}
 
-  const finalOptions = defu(options, defaultOptions) as Mail.Options
+  const finalOptions = defu(options, defaultOptions)
 
   const validatedOptions = emailConfigurationSchema.parse(finalOptions)
 
-  if (driver === 'smtp') {
-    return await sendSmtp(config.smtp, validatedOptions as Mail.Options)
+  switch (driver) {
+    case 'smtp':
+      return await sendSmtp(config.smtp, validatedOptions)
+    case 'ses':
+      return await sendSes(config.ses, validatedOptions)
+    default:
+      throw new Error(`[nuxt-transport-mailer] Driver '${driver}' not implemented or supported.`)
   }
-
-  throw new Error(`[nuxt-transport-mailer] Driver '${driver}' not implemented or supported.`)
 }
