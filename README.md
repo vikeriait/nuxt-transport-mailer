@@ -9,7 +9,7 @@ A robust and flexible Nuxt module for sending emails using [Nodemailer](https://
 
 ## Features
 
-- 📧 **Transport Support**: Easily configure SMTP transports (via Nodemailer).
+- 📧 **Transport Support**: Easily configure **SMTP** or **AWS SES** transports.
 - 🚀 **Server-Side API**: Optional built-in API endpoint (`/api/mail/send`) to send emails from your frontend.
 - 🛡️ **Security First**: 
   - Integrated **Captcha** support (Cloudflare Turnstile, Google reCAPTCHA, hCaptcha).
@@ -57,7 +57,7 @@ export default defineNuxtConfig({
   modules: ['@vikeriait/nuxt-transport-mailer'],
 
   transportMailer: {
-    // Select the driver (currently 'smtp' is supported)
+    // Select the driver ('smtp' or 'ses')
     driver: 'smtp',
 
     // SMTP Configuration (Standard Nodemailer options)
@@ -69,6 +69,12 @@ export default defineNuxtConfig({
         user: '',
         pass: '',
       },
+    },
+
+    // OR AWS SES Configuration
+    ses: {
+      clientConfig: {},
+      commandConfig: {},
     },
 
     // Default options for all emails
@@ -110,13 +116,17 @@ export default defineNuxtConfig({
 You can also configure the module using environment variables. This is the recommended way to handle sensitive information like SMTP credentials or secret keys.
 
 ```bash
-NUXT_TRANSPORT_MAILER_DRIVER=smtp
-
+# SMTP
 NUXT_TRANSPORT_MAILER_SMTP_HOST=smtp.example.com
 NUXT_TRANSPORT_MAILER_SMTP_PORT=587
 NUXT_TRANSPORT_MAILER_SMTP_AUTH_USER=myuser
 NUXT_TRANSPORT_MAILER_SMTP_AUTH_PASS=mypassword
 NUXT_TRANSPORT_MAILER_SMTP_SECURE=false
+
+# AWS SES
+AWS_REGION=...
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
 
 NUXT_TRANSPORT_MAILER_SECURITY_CAPTCHA_ENABLED=true
 NUXT_TRANSPORT_MAILER_SECURITY_CAPTCHA_PROVIDER=turnstile

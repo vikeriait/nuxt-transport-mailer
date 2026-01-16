@@ -54,15 +54,23 @@ Configuration options for the Nuxt module.
 interface ModuleOptions {
   /**
    * The driver to use for sending emails.
-   * Currently supported: 'smtp'.
+   * Currently supported: 'smtp' | 'ses'.
    * @default 'smtp'
    */
-  driver: 'smtp'
+  driver: 'smtp' | 'ses'
 
   /**
    * SMTP transport configuration options.
    */
   smtp?: SMTPTransport.Options & { streamTransport?: boolean }
+
+  /**
+   * SES transport configuration options.
+   */
+  ses?: {
+    clientConfig?: SESv2ClientConfig
+    commandInput?: SendEmailCommandInput
+  }
 
   /**
    * Default email options applied to every email sent.

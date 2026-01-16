@@ -29,7 +29,7 @@ export default defineNuxtConfig({
 
 | Option | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `driver` | `string` | `'smtp'` | The transport driver to use. |
+| `driver` | `string` | `'smtp'` | The transport driver to use (`'smtp'` \| `'ses'`). |
 | `defaults` | `object` | `{ from: '' }` | Default options applied to every email. |
 
 #### SMTP Options (`smtp`)
@@ -44,6 +44,17 @@ export default defineNuxtConfig({
 
 ::: tip
 For a full list of SMTP options, please refer to the [Nodemailer SMTP documentation](https://nodemailer.com/smtp).
+:::
+
+#### AWS SES Options (`ses`)
+
+| Option | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `clientConfig` | `SESv2ClientConfig` | `{}` | AWS SES SDK Client configuration (region, credentials, etc.). |
+| `commandInput` | `SendEmailCommandInput` | `{}` | Default command input options. |
+
+::: tip
+For more information, see the [AWS SESv2 SDK documentation](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/sesv2/).
 :::
 
 #### Server API (`serverApi`)
@@ -117,6 +128,11 @@ NUXT_TRANSPORT_MAILER_SMTP_SECURE=false
 
 # Defaults
 NUXT_TRANSPORT_MAILER_DEFAULTS_FROM="My App <noreply@example.com>"
+
+# AWS SES
+AWS_REGION=...
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
 
 # Security - Captcha
 NUXT_TRANSPORT_MAILER_SECURITY_CAPTCHA_ENABLED=true
