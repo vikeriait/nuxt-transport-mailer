@@ -1,5 +1,5 @@
-import type SMTPTransport from 'nodemailer/lib/smtp-transport'
 import type { NuxtSecurityRouteRules } from 'nuxt-security'
+import type SMTPConnection from 'nodemailer/lib/smtp-connection'
 
 export interface ModuleOptions {
   /**
@@ -13,7 +13,7 @@ export interface ModuleOptions {
    * SMTP transport configuration options.
    * Check Nodemailer documentation for detailed options.
    */
-  smtp?: SMTPTransport.Options & { streamTransport?: boolean }
+  smtp?: SMTPConnection.Options & { streamTransport?: boolean }
 
   /**
    * Default email options applied to every email sent.

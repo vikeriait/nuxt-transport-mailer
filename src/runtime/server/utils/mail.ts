@@ -26,7 +26,7 @@ export const sendMail = async (options: SendMailOptions): Promise<SentMessageInf
   const validatedOptions = emailConfigurationSchema.parse(finalOptions)
 
   if (driver === 'smtp') {
-    return await sendSmtp(config, validatedOptions as Mail.Options)
+    return await sendSmtp(config.smtp, validatedOptions as Mail.Options)
   }
 
   throw new Error(`[nuxt-transport-mailer] Driver '${driver}' not implemented or supported.`)
