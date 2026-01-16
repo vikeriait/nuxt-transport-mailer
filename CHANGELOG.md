@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.1.2
+
+[compare changes](https://github.com/vikeriait/nuxt-transport-mailer/compare/v1.1.0...v1.1.2)
+
+### 🩹 Fixes
+
+- **docs:** Fixed broken dependency ([7b306ad](https://github.com/vikeriait/nuxt-transport-mailer/commit/7b306ad))
+
+### ❤️ Contributors
+
+- Matteo Di Ninno <matteo.dininno@vikeria.it>
+
 ## v1.1.0
 
 [compare changes](https://github.com/vikeriait/nuxt-transport-mailer/compare/v1.0.0...v1.1.0)
