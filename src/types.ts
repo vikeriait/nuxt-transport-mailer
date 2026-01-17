@@ -26,6 +26,13 @@ export interface ModuleOptions {
    */
   ses?: {
     endpoint?: string
+    /**
+     * Configuration for the AWS client.
+     *
+     * Accepts:
+     * - `SESv2ClientConfig` from `@aws-sdk/client-sesv2` for Node.js environments.
+     * - `ConstructorParameters<typeof AwsClient>[0]` from `aws4fetch` for Edge environments.
+     */
     clientConfig?: SESv2ClientConfig | ConstructorParameters<typeof AwsClient>[0]
     commandInput?: Partial<SendEmailCommandInput>
   }

@@ -30,6 +30,7 @@ export default defineNuxtConfig({
 | Option | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `driver` | `string` | `'smtp'` | The transport driver to use (`'smtp'` \| `'ses'`). |
+| `edge` | `boolean` | `false` | Enable Edge compatibility mode (uses `aws4fetch` for SES). |
 | `defaults` | `object` | `{ from: '' }` | Default options applied to every email. |
 
 #### SMTP Options (`smtp`)
@@ -50,11 +51,14 @@ For a full list of SMTP options, please refer to the [Nodemailer SMTP documentat
 
 | Option | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `clientConfig` | `SESv2ClientConfig` | `{}` | AWS SES SDK Client configuration (region, credentials, etc.). |
-| `commandInput` | `SendEmailCommandInput` | `{}` | Default command input options. |
+| `clientConfig` | `object` | `{}` | AWS SES SDK Client configuration (region, credentials, etc.). |
+| `commandInput` | `object` | `{}` | Default command input options. |
+| `endpoint` | `string` | `undefined` | Custom endpoint for SES (optional). |
 
-::: tip
-For more information, see the [AWS SESv2 SDK documentation](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/sesv2/).
+::: tip AWS Credentials
+**Node.js (Standard)**: If you are using the default Node.js runtime, the official AWS SDK will automatically detect credentials from standard environment variables (e.g., `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`). You usually don't need to configure `clientConfig` explicitly.
+
+**Edge (aws4fetch)**: When `edge: true`, the module uses `aws4fetch`, which **does not** automatically read standard AWS environment variables. You **must** explicitly provide credentials via `clientConfig` (in `nuxt.config.ts`) or by using the specific environment variables listed below (e.g., `NUXT_TRANSPORT_MAILER_SES_CLIENT_CONFIG_ACCESS_KEY_ID`).
 :::
 
 #### Server API (`serverApi`)
@@ -119,6 +123,9 @@ The recommended way to handle sensitive credentials is using a `.env` file.
 # Driver
 NUXT_TRANSPORT_MAILER_DRIVER=smtp
 
+# Edge Mode
+NUXT_TRANSPORT_MAILER_EDGE=true
+
 # SMTP
 NUXT_TRANSPORT_MAILER_SMTP_HOST=smtp.example.com
 NUXT_TRANSPORT_MAILER_SMTP_PORT=587
@@ -129,10 +136,17 @@ NUXT_TRANSPORT_MAILER_SMTP_SECURE=false
 # Defaults
 NUXT_TRANSPORT_MAILER_DEFAULTS_FROM="My App <noreply@example.com>"
 
-# AWS SES
+# AWS SES (Node.js - Auto-detected)
 AWS_REGION=...
 AWS_ACCESS_KEY_ID=...
 AWS_SECRET_ACCESS_KEY=...
+
+# AWS SES (Edge - Explicit mapping required)
+NUXT_TRANSPORT_MAILER_SES_CLIENT_CONFIG_REGION=...
+NUXT_TRANSPORT_MAILER_SES_CLIENT_CONFIG_ACCESS_KEY_ID=...
+NUXT_TRANSPORT_MAILER_SES_CLIENT_CONFIG_SECRET_ACCESS_KEY=...
+# Optional custom endpoint
+NUXT_TRANSPORT_MAILER_SES_ENDPOINT=...
 
 # Security - Captcha
 NUXT_TRANSPORT_MAILER_SECURITY_CAPTCHA_ENABLED=true

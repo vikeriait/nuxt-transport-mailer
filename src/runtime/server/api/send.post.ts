@@ -7,6 +7,15 @@ import { verifyCaptcha } from '../utils/captcha'
 import type { ModuleOptions } from '../../../types'
 import type { EmailBody } from '../../../runtime/server/utils/schemas'
 
+/**
+ * Server-side API endpoint for sending emails.
+ *
+ * This handler validates the request body, performs security checks (honeypot, captcha),
+ * and uses the configured transport driver to send the email.
+ *
+ * @returns An object indicating success and the result of the email transport.
+ * @throws H3Error (400 for validation failures, 500 for transport failures).
+ */
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig().transportMailer as ModuleOptions
   const security = config.security

@@ -36,6 +36,13 @@ export const sendMail = async (options: SendMailOptions): Promise<SentMessageInf
   }
 }
 
+/**
+ * Normalizes a single email address.
+ * If the address is an object with name and address, it returns a formatted string: "Name <email@example.com>".
+ *
+ * @param address - The address to normalize (string or Address object).
+ * @returns The normalized address string.
+ */
 export const normalizeAddress = (address: string | Address) => {
   if (typeof address === 'object' && 'name' in address && 'address' in address) {
     return `${address.name} <${address.address}>`
@@ -44,10 +51,23 @@ export const normalizeAddress = (address: string | Address) => {
   return address
 }
 
+/**
+ * Normalizes an array of email addresses.
+ *
+ * @param addresses - An array of addresses (string or Address object).
+ * @returns An array of normalized address strings.
+ */
 export const normalizeAddresses = (addresses: (string | Address)[]) => {
   return addresses.map(address => normalizeAddress(address))
 }
 
+/**
+ * Normalizes a value that can be a single address or an array of addresses.
+ * Useful for handling fields like 'to', 'cc', or 'bcc' which can take multiple formats.
+ *
+ * @param addresses - A single address or an array of addresses.
+ * @returns An array of normalized address strings.
+ */
 export const normalizeAddressArray = (addresses: string | Address | (string | Address)[]) => {
   return normalizeAddresses(Array.isArray(addresses) ? addresses : [addresses])
 }

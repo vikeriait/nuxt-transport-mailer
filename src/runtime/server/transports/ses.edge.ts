@@ -6,6 +6,17 @@ import type { SendEmailRequest, Body } from '@aws-sdk/client-sesv2'
 import { normalizeAddressArray } from '../../../runtime/server/utils/mail'
 import type { SentMessageInfo } from 'nodemailer'
 
+/**
+ * Sends an email using Amazon SES via `aws4fetch` for Edge compatibility.
+ *
+ * This function constructs a raw HTTP request to the SES v2 API, making it suitable
+ * for environments like Cloudflare Workers where the standard AWS SDK might be too heavy or incompatible.
+ *
+ * @param sesConfig - The SES configuration options, including credentials and region.
+ * @param options - The email options (recipient, subject, body, etc.).
+ * @returns A promise that resolves to the sent message info, including the Message ID.
+ * @throws Will throw an error if the SES API request fails.
+ */
 export const sendSesEdge = async (sesConfig: ModuleOptions['ses'], options: SESTransport.MailOptions): Promise<SentMessageInfo> => {
   // @ts-expect-error - Accessing potential credential properties that might exist on the union type
   const accessKeyId = sesConfig?.clientConfig?.accessKeyId || sesConfig?.clientConfig?.credentials?.accessKeyId

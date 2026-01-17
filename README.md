@@ -10,6 +10,7 @@ A robust and flexible Nuxt module for sending emails using [Nodemailer](https://
 ## Features
 
 - 📧 **Transport Support**: Easily configure **SMTP** or **AWS SES** transports.
+- 🌐 **Edge Ready**: Built-in support for Edge environments (Cloudflare Workers, etc.) using `aws4fetch` for AWS SES.
 - 🚀 **Server-Side API**: Optional built-in API endpoint (`/api/mail/send`) to send emails from your frontend.
 - 🛡️ **Security First**: 
   - Integrated **Captcha** support (Cloudflare Turnstile, Google reCAPTCHA, hCaptcha).
@@ -73,7 +74,16 @@ export default defineNuxtConfig({
 
     // OR AWS SES Configuration
     ses: {
-      clientConfig: {},
+      endpoint: undefined, // Optional: Custom endpoint (useful for testing or localstack)
+      clientConfig: {
+        // For Edge (aws4fetch): Credentials must be explicit
+        // For Node (AWS SDK): Optional if using standard AWS_ env vars
+        region: 'eu-central-1',
+        credentials: {
+          accessKeyId: '',
+          secretAccessKey: '',
+        }
+      },
       commandConfig: {},
     },
 
@@ -113,7 +123,12 @@ export default defineNuxtConfig({
 
 ### Environment Variables
 
-You can also configure the module using environment variables. This is the recommended way to handle sensitive information like SMTP credentials or secret keys.
+You can also configure the module using environment variables.
+
+> [!NOTE]
+> **Node.js / Standard Usage**: The AWS SDK automatically detects standard environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`). You don't need to explicitly map them in `nuxt.config.ts`.
+>
+> **Edge / aws4fetch**: The `aws4fetch` client requires explicit configuration. You must either map your environment variables in `nuxt.config.ts` or use the specific Nuxt-namespaced variables below.
 
 ```bash
 # SMTP
@@ -123,10 +138,18 @@ NUXT_TRANSPORT_MAILER_SMTP_AUTH_USER=myuser
 NUXT_TRANSPORT_MAILER_SMTP_AUTH_PASS=mypassword
 NUXT_TRANSPORT_MAILER_SMTP_SECURE=false
 
-# AWS SES
+# AWS SES (Node.js - Auto-detected)
 AWS_REGION=...
 AWS_ACCESS_KEY_ID=...
 AWS_SECRET_ACCESS_KEY=...
+
+# AWS SES (Edge - Explicit mapping required)
+# OR Map these in nuxt.config.ts to process.env.AWS_*
+NUXT_TRANSPORT_MAILER_SES_CLIENT_CONFIG_REGION=...
+NUXT_TRANSPORT_MAILER_SES_CLIENT_CONFIG_ACCESS_KEY_ID=...
+NUXT_TRANSPORT_MAILER_SES_CLIENT_CONFIG_SECRET_ACCESS_KEY=...
+# Optional custom endpoint
+NUXT_TRANSPORT_MAILER_SES_ENDPOINT=...
 
 NUXT_TRANSPORT_MAILER_SECURITY_CAPTCHA_ENABLED=true
 NUXT_TRANSPORT_MAILER_SECURITY_CAPTCHA_PROVIDER=turnstile
