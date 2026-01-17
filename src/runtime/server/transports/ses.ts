@@ -23,6 +23,7 @@ export const sendSes = async (sesConfig: ModuleOptions['ses'], options: SESTrans
     }
   }
   catch (error: unknown) {
-    throw new Error(`[nuxt-transport-mailer] SES Transport failed: ${error.message || error}`)
+    const err = error as Error
+    throw new Error(`[nuxt-transport-mailer] SES Transport failed: ${err.message || err}`)
   }
 }
