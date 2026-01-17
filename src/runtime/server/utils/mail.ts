@@ -5,6 +5,7 @@ import type { ModuleOptions } from '../../../types'
 import { sendSmtp } from '../transports/smtp'
 import { sendSes } from '../transports/ses'
 import { emailConfigurationSchema } from './schemas'
+import type { Address } from 'nodemailer/lib/mailer'
 
 /**
  * Sends an email using the configured transport driver.
@@ -33,4 +34,20 @@ export const sendMail = async (options: SendMailOptions): Promise<SentMessageInf
     default:
       throw new Error(`[nuxt-transport-mailer] Driver '${driver}' not implemented or supported.`)
   }
+}
+
+export const normalizeAddress = (address: string | Address) => {
+  if (typeof address === 'object' && 'name' in address && 'address' in address) {
+    return `${address.name} <${address.address}>`
+  }
+
+  return address
+}
+
+export const normalizeAddresses = (addresses: (string | Address)[]) => {
+  return addresses.map(address => normalizeAddress(address))
+}
+
+export const normalizeAddressArray = (addresses: string | Address | (string | Address)[]) => {
+  return normalizeAddresses(Array.isArray(addresses) ? addresses : [addresses])
 }

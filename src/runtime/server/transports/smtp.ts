@@ -19,6 +19,6 @@ export const sendSmtp = async (smtpConfig: ModuleOptions['smtp'], options: SMTPT
   }
   catch (error: unknown) {
     const err = error as SMTPError
-    throw new Error(`[nuxt-transport-mailer] SMTP Transport failed: ${err}.`)
+    throw new Error(`[nuxt-transport-mailer] SMTP Transport failed: ${err.message || err}`)
   }
 }

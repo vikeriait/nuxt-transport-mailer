@@ -45,6 +45,7 @@
     "@aws-sdk/client-sesv2": "^3.970.0",
     "@nuxt/kit": "^4.2.2",
     "@types/nodemailer": "^7.0.5",
+    "aws4fetch": "^1.0.20",
     "defu": "^6.1.4",
     "nodemailer": "^7.0.12"
   },

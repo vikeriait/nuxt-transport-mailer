@@ -19,6 +19,7 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: 'transportMailer',
   },
   defaults: {
+    edge: false,
     driver: 'smtp',
     smtp: {
       host: 'localhost',
@@ -27,6 +28,13 @@ export default defineNuxtModule<ModuleOptions>({
       auth: {
         user: undefined,
         pass: undefined,
+      },
+    },
+    ses: {
+      clientConfig: {
+        region: undefined,
+        accessKeyId: undefined,
+        secretAccessKey: undefined,
       },
     },
     defaults: {

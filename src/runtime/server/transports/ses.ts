@@ -1,9 +1,9 @@
 import type { SentMessageInfo } from 'nodemailer'
-import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2'
-import * as nodemailer from 'nodemailer'
 import type { ModuleOptions } from '../../../types'
-import { defu } from 'defu'
 import type SESTransport from 'nodemailer/lib/ses-transport'
+import { sendSesNode } from '../../../runtime/server/transports/ses.node'
+import { useRuntimeConfig } from 'nitropack/runtime'
+import { sendSesEdge } from '../../../runtime/server/transports/ses.edge'
 
 /**
  * Sends an email using the SES transport.
@@ -14,21 +14,15 @@ import type SESTransport from 'nodemailer/lib/ses-transport'
  * @throws Will throw an error if the SES transport fails or if nodemailer cannot be imported.
  */
 export const sendSes = async (sesConfig: ModuleOptions['ses'], options: SESTransport.MailOptions): Promise<SentMessageInfo> => {
-  const sesClient = new SESv2Client(sesConfig?.clientConfig ?? {})
-
-  options.ses = defu(
-    options.ses,
-    sesConfig?.commandInput ?? {},
-  )
-
   try {
-    const transporter = nodemailer.createTransport({
-      SES: { sesClient, SendEmailCommand },
-    })
-    return await transporter.sendMail(options)
+    if (useRuntimeConfig().transportMailer.edge) {
+      return await sendSesEdge(sesConfig, options)
+    }
+    else {
+      return await sendSesNode(sesConfig, options)
+    }
   }
   catch (error: unknown) {
-    console.error(error)
-    throw new Error(`[nuxt-transport-mailer] SES Transport failed: ${error}.`)
+    throw new Error(`[nuxt-transport-mailer] SES Transport failed: ${error.message || error}`)
   }
 }

@@ -2,8 +2,11 @@ import type { NuxtSecurityRouteRules } from 'nuxt-security'
 import type SMTPConnection from 'nodemailer/lib/smtp-connection'
 import type { SendEmailCommandInput } from '@aws-sdk/client-sesv2'
 import type { SESv2ClientConfig } from '@aws-sdk/client-sesv2/dist-types/SESv2Client'
+import type { AwsClient } from 'aws4fetch'
 
 export interface ModuleOptions {
+  edge: boolean
+
   /**
    * The driver to use for sending emails.
    * Currently supported: 'smtp' | 'ses'.
@@ -22,8 +25,9 @@ export interface ModuleOptions {
    * Check AWS SES documentation for detailed options.
    */
   ses?: {
-    clientConfig?: SESv2ClientConfig
-    commandInput?: SendEmailCommandInput
+    endpoint?: string
+    clientConfig?: SESv2ClientConfig | ConstructorParameters<typeof AwsClient>[0]
+    commandInput?: Partial<SendEmailCommandInput>
   }
 
   /**

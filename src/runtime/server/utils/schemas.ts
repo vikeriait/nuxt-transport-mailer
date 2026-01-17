@@ -1,15 +1,24 @@
 import { z } from 'zod'
 
+const address = z.union([
+  z.string(),
+  z.object({
+    name: z.string(),
+    address: z.string(),
+  }),
+])
+const destination = z.union([address, z.array(address)]).optional()
+
 const baseEmailSchema = z.object({
-  to: z.union([z.string(), z.array(z.string())]).optional(),
-  cc: z.union([z.string(), z.array(z.string())]).optional(),
-  bcc: z.union([z.string(), z.array(z.string())]).optional(),
+  to: destination,
+  cc: destination,
+  bcc: destination,
 
   subject: z.string().optional(),
   text: z.string().optional(),
   html: z.string().optional(),
-  from: z.string().optional(),
-  replyTo: z.string().optional(),
+  from: address.optional(),
+  replyTo: address.optional(),
 
   _gotcha: z.string().optional(),
   captchaToken: z.string().optional(),
@@ -36,7 +45,7 @@ export const emailBodySchema = baseEmailSchema
  * Zod schema for validating the full email configuration, including the sender address.
  */
 export const emailConfigurationSchema = baseEmailSchema.safeExtend({
-  from: z.string(),
+  from: address,
 })
 
 /**
