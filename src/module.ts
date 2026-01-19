@@ -51,8 +51,8 @@ export default defineNuxtModule<ModuleOptions>({
         secretKey: undefined,
       },
       rateLimiter: {
-        tokensPerInterval: 2,
-        interval: 3000000,
+        tokensPerInterval: 10,
+        interval: 300000,
       },
     },
   },
