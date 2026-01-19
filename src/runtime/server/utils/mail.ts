@@ -1,11 +1,10 @@
-import { useRuntimeConfig } from 'nitropack/runtime'
+import { useRuntimeConfig, useNitroApp } from 'nitropack/runtime'
 import type { SendMailOptions, SentMessageInfo } from 'nodemailer'
 import { defu } from 'defu'
-import type { ModuleOptions } from '../../../types'
+import type { ModuleOptions, EmailOptions } from '../../../types'
 import { sendSmtp } from '../transports/smtp'
 import { sendSes } from '../transports/ses'
 import { emailConfigurationSchema } from './schemas'
-import type { Address } from 'nodemailer/lib/mailer'
 
 /**
  * Sends an email using the configured transport driver.
@@ -24,50 +23,25 @@ export const sendMail = async (options: SendMailOptions): Promise<SentMessageInf
 
   const finalOptions = defu(options, defaultOptions)
 
-  const validatedOptions = emailConfigurationSchema.parse(finalOptions)
+  const validatedOptions = emailConfigurationSchema.parse(finalOptions) as EmailOptions
+
+  const nitroApp = useNitroApp()
+  await nitroApp.hooks.callHook('transport:send:before', validatedOptions)
+
+  let result: SentMessageInfo
 
   switch (driver) {
     case 'smtp':
-      return await sendSmtp(config.smtp, validatedOptions)
+      result = await sendSmtp(config.smtp, validatedOptions)
+      break
     case 'ses':
-      return await sendSes(config.ses, validatedOptions)
+      result = await sendSes(config.ses, validatedOptions)
+      break
     default:
       throw new Error(`[nuxt-transport-mailer] Driver '${driver}' not implemented or supported.`)
   }
-}
 
-/**
- * Normalizes a single email address.
- * If the address is an object with name and address, it returns a formatted string: "Name <email@example.com>".
- *
- * @param address - The address to normalize (string or Address object).
- * @returns The normalized address string.
- */
-export const normalizeAddress = (address: string | Address) => {
-  if (typeof address === 'object' && 'name' in address && 'address' in address) {
-    return `${address.name} <${address.address}>`
-  }
+  await nitroApp.hooks.callHook('transport:send:after', result)
 
-  return address
-}
-
-/**
- * Normalizes an array of email addresses.
- *
- * @param addresses - An array of addresses (string or Address object).
- * @returns An array of normalized address strings.
- */
-export const normalizeAddresses = (addresses: (string | Address)[]) => {
-  return addresses.map(address => normalizeAddress(address))
-}
-
-/**
- * Normalizes a value that can be a single address or an array of addresses.
- * Useful for handling fields like 'to', 'cc', or 'bcc' which can take multiple formats.
- *
- * @param addresses - A single address or an array of addresses.
- * @returns An array of normalized address strings.
- */
-export const normalizeAddressArray = (addresses: string | Address | (string | Address)[]) => {
-  return normalizeAddresses(Array.isArray(addresses) ? addresses : [addresses])
+  return result
 }

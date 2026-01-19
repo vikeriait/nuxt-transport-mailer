@@ -70,6 +70,12 @@ export default defineNuxtModule<ModuleOptions>({
       },
     )
 
+    nuxt.hook('nitro:config', (nitroConfig) => {
+      nitroConfig.commonJS = defu(nitroConfig.commonJS, {
+        requireReturnsDefault: 'preferred',
+      })
+    })
+
     setupServerApi(nuxt.options.runtimeConfig.transportMailer as ModuleOptions, nuxt, resolver)
 
     addServerImportsDir(resolver.resolve('./runtime/server/utils'))

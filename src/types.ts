@@ -1,8 +1,11 @@
 import type { NuxtSecurityRouteRules } from 'nuxt-security'
 import type SMTPConnection from 'nodemailer/lib/smtp-connection'
-import type { SendEmailCommandInput } from '@aws-sdk/client-sesv2'
+import type { SendEmailCommandInput, SendEmailRequest } from '@aws-sdk/client-sesv2'
 import type { SESv2ClientConfig } from '@aws-sdk/client-sesv2/dist-types/SESv2Client'
 import type { AwsClient } from 'aws4fetch'
+import type { WorkerMailerOptions, EmailOptions as WorkerMailerEmailOptions } from 'worker-mailer'
+import type SESTransport from 'nodemailer/lib/ses-transport'
+import type { SentMessageInfo } from 'nodemailer'
 
 export interface ModuleOptions {
   edge: boolean
@@ -17,8 +20,10 @@ export interface ModuleOptions {
   /**
    * SMTP transport configuration options.
    * Check Nodemailer documentation for detailed options.
+   *
+   * For Edge environments (WorkerMailer), standard `auth` options are automatically mapped to `credentials`.
    */
-  smtp?: SMTPConnection.Options & { streamTransport?: boolean }
+  smtp?: SMTPOptions & { streamTransport?: boolean }
 
   /**
    * SES transport configuration options.
@@ -104,4 +109,14 @@ export interface TransportMailerError {
   statusMessage?: string
   message?: string
   data?: unknown
+}
+
+export type SMTPOptions = SMTPConnection.Options | WorkerMailerOptions
+export type EmailOptions = SESTransport.MailOptions | WorkerMailerEmailOptions | SendEmailRequest
+
+declare module 'nitropack' {
+  export interface NitroRuntimeHooks {
+    'transport:send:before': (options: EmailOptions) => void | Promise<void>
+    'transport:send:after': (result: SentMessageInfo) => void | Promise<void>
+  }
 }

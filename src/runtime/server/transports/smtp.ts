@@ -1,8 +1,9 @@
 import type { SentMessageInfo } from 'nodemailer'
-import type { ModuleOptions } from '../../../types'
+import type { EmailOptions, ModuleOptions } from '../../../types'
+import type SMTPConnection from 'nodemailer/lib/smtp-connection'
 import type { SMTPError } from 'nodemailer/lib/smtp-connection'
-import * as nodemailer from 'nodemailer'
-import type SMTPTransport from 'nodemailer/lib/smtp-transport'
+import { useRuntimeConfig } from 'nitropack/runtime'
+import type { WorkerMailerOptions } from 'worker-mailer'
 
 /**
  * Sends an email using the SMTP transport.
@@ -12,10 +13,16 @@ import type SMTPTransport from 'nodemailer/lib/smtp-transport'
  * @returns A promise that resolves to the sent message info.
  * @throws Will throw an error if the SMTP transport fails or if nodemailer cannot be imported.
  */
-export const sendSmtp = async (smtpConfig: ModuleOptions['smtp'], options: SMTPTransport.MailOptions): Promise<SentMessageInfo> => {
+export const sendSmtp = async (smtpConfig: ModuleOptions['smtp'], options: EmailOptions): Promise<SentMessageInfo> => {
   try {
-    const transporter = nodemailer.createTransport(smtpConfig)
-    return await transporter.sendMail(options)
+    if (useRuntimeConfig().transportMailer.edge) {
+      const { sendSmtpEdge } = await import('./smtp.edge')
+      return sendSmtpEdge(smtpConfig as WorkerMailerOptions, options)
+    }
+    else {
+      const { sendSmtpNode } = await import('./smtp.node')
+      return sendSmtpNode(smtpConfig as SMTPConnection.Options, options)
+    }
   }
   catch (error: unknown) {
     const err = error as SMTPError

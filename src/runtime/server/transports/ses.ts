@@ -1,9 +1,6 @@
 import type { SentMessageInfo } from 'nodemailer'
-import type { ModuleOptions } from '../../../types'
-import type SESTransport from 'nodemailer/lib/ses-transport'
-import { sendSesNode } from '../../../runtime/server/transports/ses.node'
+import type { EmailOptions, ModuleOptions } from '../../../types'
 import { useRuntimeConfig } from 'nitropack/runtime'
-import { sendSesEdge } from '../../../runtime/server/transports/ses.edge'
 
 /**
  * Sends an email using the SES transport.
@@ -13,12 +10,14 @@ import { sendSesEdge } from '../../../runtime/server/transports/ses.edge'
  * @returns A promise that resolves to the sent message info.
  * @throws Will throw an error if the SES transport fails or if nodemailer cannot be imported.
  */
-export const sendSes = async (sesConfig: ModuleOptions['ses'], options: SESTransport.MailOptions): Promise<SentMessageInfo> => {
+export const sendSes = async (sesConfig: ModuleOptions['ses'], options: EmailOptions): Promise<SentMessageInfo> => {
   try {
     if (useRuntimeConfig().transportMailer.edge) {
+      const { sendSesEdge } = await import('./ses.edge')
       return await sendSesEdge(sesConfig, options)
     }
     else {
+      const { sendSesNode } = await import('./ses.node')
       return await sendSesNode(sesConfig, options)
     }
   }

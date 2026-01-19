@@ -1,6 +1,6 @@
 import { type Ref, ref } from 'vue'
 import { useRuntimeConfig } from '#app'
-import type { ModuleOptions } from '../../types'
+import type { EmailOptions, ModuleOptions } from '../../types'
 import type { FetchError } from 'ofetch'
 import type { EmailBody } from '../../../src/runtime/server/utils/schemas'
 import type SMTPTransport from 'nodemailer/lib/smtp-transport'
@@ -23,7 +23,7 @@ export function useMailer() {
    * Sends an email.
    * @param mail - An object containing the mail details (to, subject, text, etc.).
    */
-  async function send(mail: EmailBody) {
+  async function send(mail: EmailBody | EmailOptions) {
     pending.value = true
     error.value = null
 
