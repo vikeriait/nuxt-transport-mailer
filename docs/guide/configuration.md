@@ -29,7 +29,7 @@ export default defineNuxtConfig({
 
 | Option | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `driver` | `string` | `'smtp'` | The transport driver to use (`'smtp'` \| `'ses'`). |
+| `driver` | `string` | `'smtp'` | The transport driver to use (`'smtp'` \| `'ses'` \| `'stream'`). |
 | `edge` | `boolean` | `undefined` | Manually force Edge compatibility mode. `true` forces Edge drivers (`worker-mailer`/`aws4fetch`), `false` forces Node.js drivers. If `undefined`, auto-detects the environment. |
 | `defaults` | `object` | `{ from: '' }` | Default options applied to every email. |
 
@@ -37,6 +37,10 @@ export default defineNuxtConfig({
 When running in an Edge environment (e.g., Cloudflare Workers) or when `edge` is set to `true`:
 - **SMTP**: Uses [worker-mailer](https://github.com/nora-soderlund/worker-mailer) to send emails. **Note: Currently works ONLY on Cloudflare** as it relies on Cloudflare's `connect()` API for TCP sockets.
 - **SES**: Uses [aws4fetch](https://github.com/mhart/aws4fetch) to send raw HTTP requests to the AWS SES v2 API. This is compatible with most edge providers (Cloudflare, Vercel, Netlify).
+:::
+
+::: warning Stream Driver
+The `'stream'` driver is intended for debugging or testing purposes in **Node.js environments only**. It does not send actual emails but returns the raw RFC822 message stream in the response. It is not supported in Edge environments.
 :::
 
 ## Configuration Compatibility Layer

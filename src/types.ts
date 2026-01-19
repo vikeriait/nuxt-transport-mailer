@@ -23,7 +23,7 @@ export interface ModuleOptions {
    * Currently supported: 'smtp' | 'ses'.
    * @default 'smtp'
    */
-  driver: 'smtp' | 'ses'
+  driver: 'smtp' | 'ses' | 'stream'
 
   /**
    * SMTP transport configuration options.
@@ -32,7 +32,7 @@ export interface ModuleOptions {
    * For Edge environments (WorkerMailer), standard `auth` options are automatically mapped to `credentials`.
    * WARNING: SMTP on Edge is currently only supported on Cloudflare.
    */
-  smtp?: SMTPOptions & { streamTransport?: boolean }
+  smtp?: SMTPOptions
 
   /**
    * SES transport configuration options.

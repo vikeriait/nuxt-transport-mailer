@@ -10,14 +10,12 @@ export default defineNuxtConfig({
     enabled: true,
   },
   transportMailer: {
+    driver: 'stream',
     serverApi: {
       enabled: true,
     },
     defaults: {
       from: 'test@example.com',
-    },
-    smtp: {
-      streamTransport: true,
     },
     security: {
       corsHandler: {

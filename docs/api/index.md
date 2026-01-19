@@ -60,16 +60,16 @@ interface ModuleOptions {
 
   /**
    * The driver to use for sending emails.
-   * Currently supported: 'smtp' | 'ses'.
+   * Currently supported: 'smtp' | 'ses' | 'stream'.
    * @default 'smtp'
    */
-  driver: 'smtp' | 'ses'
+  driver: 'smtp' | 'ses' | 'stream'
 
   /**
    * SMTP transport configuration options.
    * On Edge (Cloudflare), these are mapped to worker-mailer options.
    */
-  smtp?: SMTPOptions & { streamTransport?: boolean }
+  smtp?: SMTPOptions
 
   /**
    * SES transport configuration options.

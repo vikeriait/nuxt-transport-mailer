@@ -5,6 +5,7 @@ import type { ModuleOptions, EmailOptions } from '../../../types'
 import { sendSmtp } from '../transports/smtp'
 import { sendSes } from '../transports/ses'
 import { emailConfigurationSchema } from './schemas'
+import { sendStream } from '../transports/stream'
 
 /**
  * Sends an email using the configured transport driver.
@@ -36,6 +37,9 @@ export const sendMail = async (options: SendMailOptions): Promise<SentMessageInf
       break
     case 'ses':
       result = await sendSes(config.ses, validatedOptions)
+      break
+    case 'stream':
+      result = await sendStream(validatedOptions)
       break
     default:
       throw new Error(`[nuxt-transport-mailer] Driver '${driver}' not implemented or supported.`)
