@@ -16,7 +16,7 @@ export interface ModuleOptions {
    * If `false`, it forces Node.js compatible drivers.
    * If `undefined`, the module attempts to auto-detect the environment (e.g., Cloudflare Workers).
    */
-  edge: boolean
+  edge?: boolean
 
   /**
    * The driver to use for sending emails.

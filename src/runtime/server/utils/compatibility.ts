@@ -14,7 +14,7 @@ import { useRuntimeConfig } from 'nitropack/runtime'
  * Determines if the current execution environment is considered an "Edge" environment.
  *
  * This checks:
- * 1. The `edge` configuration option in `transportMailer`.
+ * 1. The `edge` configuration option in `transportMailer` (handles both boolean and "true"/"false" strings from ENV).
  * 2. If `isNode` is false.
  * 3. If the platform provider matches known edge providers (Cloudflare Workers/Pages, Vercel, Netlify).
  *
@@ -22,8 +22,12 @@ import { useRuntimeConfig } from 'nitropack/runtime'
  */
 export const isEdgeEnvironment = (): boolean => {
   const edge = useRuntimeConfig().transportMailer?.edge
-  if (edge !== undefined) {
-    return edge
+
+  if (edge === true || edge === 'true') {
+    return true
+  }
+  if (edge === false || edge === 'false') {
+    return false
   }
 
   return !isNode || provider === 'cloudflare_workers' || provider === 'cloudflare_pages' || provider === 'vercel' || provider === 'netlify'
