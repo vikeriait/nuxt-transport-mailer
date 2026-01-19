@@ -1,5 +1,9 @@
 import { z } from 'zod'
 
+/**
+ * Zod schema definition for an email address.
+ * Can be a simple string or an object with name and address.
+ */
 const address = z.union([
   z.string(),
   z.object({
@@ -7,6 +11,11 @@ const address = z.union([
     address: z.string(),
   }),
 ])
+
+/**
+ * Zod schema definition for a destination (to, cc, bcc).
+ * Can be a single address or an array of addresses.
+ */
 const destination = z.union([address, z.array(address)]).optional()
 
 const baseEmailSchema = z.object({

@@ -8,6 +8,14 @@ import type SESTransport from 'nodemailer/lib/ses-transport'
 import type { SentMessageInfo } from 'nodemailer'
 
 export interface ModuleOptions {
+  /**
+   * Manually force the module to run in "edge" mode.
+   *
+   * If `true`, the module will use `worker-mailer` for SMTP and `aws4fetch` for SES,
+   * regardless of the actual environment detection.
+   * If `false`, it forces Node.js compatible drivers.
+   * If `undefined`, the module attempts to auto-detect the environment (e.g., Cloudflare Workers).
+   */
   edge: boolean
 
   /**
@@ -22,6 +30,7 @@ export interface ModuleOptions {
    * Check Nodemailer documentation for detailed options.
    *
    * For Edge environments (WorkerMailer), standard `auth` options are automatically mapped to `credentials`.
+   * WARNING: SMTP on Edge is currently only supported on Cloudflare.
    */
   smtp?: SMTPOptions & { streamTransport?: boolean }
 

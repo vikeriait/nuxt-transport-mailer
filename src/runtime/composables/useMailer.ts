@@ -7,9 +7,16 @@ import type SMTPTransport from 'nodemailer/lib/smtp-transport'
 import type SESTransport from 'nodemailer/lib/ses-transport'
 
 /**
- * Composable for sending emails via the server API endpoint.
+ * Client-side composable for sending emails via the configured server API endpoint.
  *
- * @returns An object with the `send` function, and refs for `data`, `pending`, and `error`.
+ * This composable exposes a `send` method and reactive state for handling the request lifecycle
+ * (pending, error, data).
+ *
+ * @returns An object containing:
+ * - `send`: Function to trigger the email sending.
+ * - `data`: The response from the server upon success (e.g., message ID).
+ * - `pending`: Boolean indicating if the request is currently in progress.
+ * - `error`: Any error that occurred during the request.
  */
 export function useMailer() {
   const config = useRuntimeConfig().public.transportMailer as ModuleOptions
@@ -20,8 +27,9 @@ export function useMailer() {
   const error: Ref<FetchError | null> = ref(null)
 
   /**
-   * Sends an email.
-   * @param mail - An object containing the mail details (to, subject, text, etc.).
+   * Sends an email by making a POST request to the server API.
+   *
+   * @param mail - The email content options (recipient, subject, body, etc.).
    */
   async function send(mail: EmailBody | EmailOptions) {
     pending.value = true

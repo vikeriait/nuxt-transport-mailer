@@ -30,8 +30,24 @@ export default defineNuxtConfig({
 | Option | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `driver` | `string` | `'smtp'` | The transport driver to use (`'smtp'` \| `'ses'`). |
-| `edge` | `boolean` | `false` | Enable Edge compatibility mode (uses `aws4fetch` for SES). |
+| `edge` | `boolean` | `undefined` | Manually force Edge compatibility mode. `true` forces Edge drivers (`worker-mailer`/`aws4fetch`), `false` forces Node.js drivers. If `undefined`, auto-detects the environment. |
 | `defaults` | `object` | `{ from: '' }` | Default options applied to every email. |
+
+::: tip Edge Compatibility
+When running in an Edge environment (e.g., Cloudflare Workers) or when `edge` is set to `true`:
+- **SMTP**: Uses [worker-mailer](https://github.com/nora-soderlund/worker-mailer) to send emails. **Note: Currently works ONLY on Cloudflare** as it relies on Cloudflare's `connect()` API for TCP sockets.
+- **SES**: Uses [aws4fetch](https://github.com/mhart/aws4fetch) to send raw HTTP requests to the AWS SES v2 API. This is compatible with most edge providers (Cloudflare, Vercel, Netlify).
+:::
+
+## Configuration Compatibility Layer
+
+The module includes a built-in compatibility layer that allows you to use standard Nodemailer-style configurations even when running on the Edge.
+
+- **SMTP Mapping**: Standard `auth.user` and `auth.pass` are automatically mapped to the `credentials.username` and `credentials.password` required by `worker-mailer`.
+- **SES Mapping**: Standard email options (like `from`, `to`, `subject`, `text`, `html`) are automatically translated into the raw AWS SES v2 API request format required by `aws4fetch`.
+- **Credential Flattening**: If you provide SES credentials at the top level of `clientConfig`, the module automatically wraps them into the `credentials` object required by the standard AWS SDK in Node.js environments.
+
+This allows you to maintain a single configuration that works across both standard and edge environments without manual translation.
 
 #### SMTP Options (`smtp`)
 

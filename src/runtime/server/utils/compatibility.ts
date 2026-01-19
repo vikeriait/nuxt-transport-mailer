@@ -10,6 +10,16 @@ import type { AwsClient } from 'aws4fetch'
 import { defu } from 'defu'
 import { useRuntimeConfig } from 'nitropack/runtime'
 
+/**
+ * Determines if the current execution environment is considered an "Edge" environment.
+ *
+ * This checks:
+ * 1. The `edge` configuration option in `transportMailer`.
+ * 2. If `isNode` is false.
+ * 3. If the platform provider matches known edge providers (Cloudflare Workers/Pages, Vercel, Netlify).
+ *
+ * @returns {boolean} True if running in an edge environment, false otherwise.
+ */
 export const isEdgeEnvironment = (): boolean => {
   const edge = useRuntimeConfig().transportMailer?.edge
   if (edge !== undefined) {
@@ -19,6 +29,15 @@ export const isEdgeEnvironment = (): boolean => {
   return !isNode || provider === 'cloudflare_workers' || provider === 'cloudflare_pages' || provider === 'vercel' || provider === 'netlify'
 }
 
+/**
+ * Normalizes SES configuration for Node.js environments (using @aws-sdk/client-sesv2).
+ *
+ * It handles the flattening of credentials if they are provided at the top level of the client config
+ * instead of nested within a `credentials` object.
+ *
+ * @param sesConfig - The module's SES configuration.
+ * @returns {SESv2ClientConfig} The configuration object suitable for `SESv2Client`.
+ */
 export const getSesClientConfigNode = (sesConfig: ModuleOptions['ses']): SESv2ClientConfig => {
   let clientConfig = sesConfig?.clientConfig || {}
 
@@ -38,6 +57,15 @@ export const getSesClientConfigNode = (sesConfig: ModuleOptions['ses']): SESv2Cl
   return clientConfig as SESv2ClientConfig
 }
 
+/**
+ * Normalizes SES configuration for Edge environments (using aws4fetch).
+ *
+ * Extracts credentials and region from various potential locations in the config object
+ * to create a compatible configuration for `AwsClient`.
+ *
+ * @param sesConfig - The module's SES configuration.
+ * @returns {ConstructorParameters<typeof AwsClient>[0]} The configuration object for `AwsClient`.
+ */
 export const getSesClientConfigEdge = (sesConfig: ModuleOptions['ses']): ConstructorParameters<typeof AwsClient>[0] => {
   // @ts-expect-error - Accessing potential credential properties that might exist on the union type
   const accessKeyId = sesConfig?.clientConfig?.accessKeyId || sesConfig?.clientConfig?.credentials?.accessKeyId
@@ -57,6 +85,17 @@ export const getSesClientConfigEdge = (sesConfig: ModuleOptions['ses']): Constru
   } as ConstructorParameters<typeof AwsClient>[0]
 }
 
+/**
+ * Converts standard SMTP configuration options to `worker-mailer` options.
+ *
+ * Maps `auth.user`/`auth.pass` from Nodemailer style to `credentials.username`/`credentials.password`
+ * expected by `worker-mailer`.
+ *
+ * NOTE: SMTP on Edge (via worker-mailer) is currently only supported on Cloudflare.
+ *
+ * @param config - The generic SMTP options.
+ * @returns {WorkerMailerOptions} Options compatible with `worker-mailer`.
+ */
 export const toWorkerMailerConfig = (config: SMTPOptions): WorkerMailerOptions => {
   const smtpConfig = config as SMTPConnection.Options
   const workerConfig = config as WorkerMailerOptions
@@ -80,6 +119,15 @@ export const toWorkerMailerConfig = (config: SMTPOptions): WorkerMailerOptions =
   } as WorkerMailerOptions
 }
 
+/**
+ * Converts generic SMTP configuration to Nodemailer options.
+ *
+ * Ensures that if `worker-mailer` style credentials are provided, they are mapped back to
+ * Nodemailer's `auth` object structure.
+ *
+ * @param config - The generic SMTP options.
+ * @returns {SMTPConnection.Options} Options compatible with Nodemailer.
+ */
 export const toNodemailerConfig = (config: SMTPOptions): SMTPConnection.Options => {
   const smtpConfig = config as SMTPConnection.Options
   const workerConfig = config as WorkerMailerOptions
@@ -154,6 +202,12 @@ const toAddressOrArray = (input: string | Address | User | (string | Address | U
   return toAddressString(input)
 }
 
+/**
+ * Helper to convert various address formats into an array of address strings.
+ *
+ * @param input - The address(es) to convert.
+ * @returns {string[] | undefined} An array of formatted address strings or undefined.
+ */
 export const toAddressStringArray = (input: string | Address | User | (string | Address | User)[] | undefined): string[] | undefined => {
   if (!input) return undefined
 
@@ -171,6 +225,15 @@ const toSingleUser = (input: string | Address | User | (string | Address | User)
   return toUser(input)
 }
 
+/**
+ * Converts generic EmailOptions to `worker-mailer` compatible options.
+ *
+ * Handles normalizing fields like `from`, `to`, `cc`, `bcc` to the specific objects/arrays
+ * required by `worker-mailer`.
+ *
+ * @param options - The generic email options.
+ * @returns {WorkerMailerEmailOptions} Options ready for `worker-mailer`.
+ */
 export const toWorkerMailerMailOptions = (options: EmailOptions): WorkerMailerEmailOptions => {
   const opts = options as Mail.Options & WorkerMailerEmailOptions
 
@@ -189,6 +252,16 @@ export const toWorkerMailerMailOptions = (options: EmailOptions): WorkerMailerEm
   }
 }
 
+/**
+ * Converts generic EmailOptions to Nodemailer compatible options.
+ *
+ * Normalizes address fields to strings or arrays of strings as expected by Nodemailer.
+ * Also merges SES-specific command inputs if the driver is set to 'ses'.
+ *
+ * @param options - The generic email options.
+ * @param sesConfig - Optional SES configuration to merge default command inputs.
+ * @returns {SESTransport.MailOptions} Options ready for Nodemailer.
+ */
 export const toNodemailerMailOptions = (options: EmailOptions, sesConfig?: ModuleOptions['ses']): SESTransport.MailOptions => {
   const { ses, ...opts } = options as SESTransport.MailOptions & WorkerMailerEmailOptions
 
@@ -213,6 +286,16 @@ export const toNodemailerMailOptions = (options: EmailOptions, sesConfig?: Modul
   return nodemailerOptions
 }
 
+/**
+ * Converts generic EmailOptions to an AWS SES V2 `SendEmailRequest` object.
+ *
+ * This is used for the Edge SES transport where we construct the raw API request manually.
+ * It maps email fields to the `Destination` and `Content` structures required by the AWS SES V2 API.
+ *
+ * @param options - The generic email options.
+ * @param sesConfig - Optional SES configuration to merge default command inputs.
+ * @returns {SendEmailRequest} The request object for the SES V2 API.
+ */
 export const toSESMailOptions = (options: EmailOptions, sesConfig?: ModuleOptions['ses']): SendEmailRequest => {
   const {
     from,

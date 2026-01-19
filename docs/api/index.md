@@ -53,6 +53,12 @@ Configuration options for the Nuxt module.
 ```typescript
 interface ModuleOptions {
   /**
+   * Manually force the module to run in "edge" mode.
+   * If true, uses worker-mailer for SMTP and aws4fetch for SES.
+   */
+  edge?: boolean
+
+  /**
    * The driver to use for sending emails.
    * Currently supported: 'smtp' | 'ses'.
    * @default 'smtp'
@@ -61,15 +67,22 @@ interface ModuleOptions {
 
   /**
    * SMTP transport configuration options.
+   * On Edge (Cloudflare), these are mapped to worker-mailer options.
    */
-  smtp?: SMTPTransport.Options & { streamTransport?: boolean }
+  smtp?: SMTPOptions & { streamTransport?: boolean }
 
   /**
    * SES transport configuration options.
    */
   ses?: {
-    clientConfig?: SESv2ClientConfig
-    commandInput?: SendEmailCommandInput
+    endpoint?: string
+    /**
+     * AWS Client Config.
+     * Node.js: SESv2ClientConfig
+     * Edge: ConstructorParameters<typeof AwsClient>[0]
+     */
+    clientConfig?: SESv2ClientConfig | ConstructorParameters<typeof AwsClient>[0]
+    commandInput?: Partial<SendEmailCommandInput>
   }
 
   /**
