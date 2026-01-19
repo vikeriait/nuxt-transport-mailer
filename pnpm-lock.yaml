@@ -26,6 +26,9 @@ importers:
       nodemailer:
         specifier: ^7.0.12
         version: 7.0.12
+      std-env:
+        specifier: ^3.10.0
+        version: 3.10.0
       worker-mailer:
         specifier: ^1.2.1
         version: 1.2.1

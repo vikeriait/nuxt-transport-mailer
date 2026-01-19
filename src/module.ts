@@ -19,7 +19,7 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: 'transportMailer',
   },
   defaults: {
-    edge: false,
+    edge: undefined,
     driver: 'smtp',
     smtp: {
       host: 'localhost',

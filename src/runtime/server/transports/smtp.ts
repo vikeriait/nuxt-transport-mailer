@@ -2,8 +2,8 @@ import type { SentMessageInfo } from 'nodemailer'
 import type { EmailOptions, ModuleOptions } from '../../../types'
 import type SMTPConnection from 'nodemailer/lib/smtp-connection'
 import type { SMTPError } from 'nodemailer/lib/smtp-connection'
-import { useRuntimeConfig } from 'nitropack/runtime'
 import type { WorkerMailerOptions } from 'worker-mailer'
+import { isEdgeEnvironment } from '../utils/compatibility'
 
 /**
  * Sends an email using the SMTP transport.
@@ -15,7 +15,7 @@ import type { WorkerMailerOptions } from 'worker-mailer'
  */
 export const sendSmtp = async (smtpConfig: ModuleOptions['smtp'], options: EmailOptions): Promise<SentMessageInfo> => {
   try {
-    if (useRuntimeConfig().transportMailer.edge) {
+    if (isEdgeEnvironment()) {
       const { sendSmtpEdge } = await import('./smtp.edge')
       return sendSmtpEdge(smtpConfig as WorkerMailerOptions, options)
     }

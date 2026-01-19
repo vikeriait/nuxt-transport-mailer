@@ -1,3 +1,4 @@
+import { isNode, provider } from 'std-env'
 import type SMTPConnection from 'nodemailer/lib/smtp-connection'
 import type { WorkerMailerOptions, EmailOptions as WorkerMailerEmailOptions, User } from 'worker-mailer'
 import type Mail from 'nodemailer/lib/mailer'
@@ -8,6 +9,15 @@ import type SESTransport from 'nodemailer/lib/ses-transport'
 import type { AwsClient } from 'aws4fetch'
 import { defu } from 'defu'
 import { useRuntimeConfig } from 'nitropack/runtime'
+
+export const isEdgeEnvironment = (): boolean => {
+  const edge = useRuntimeConfig().transportMailer?.edge
+  if (edge !== undefined) {
+    return edge
+  }
+
+  return !isNode || provider === 'cloudflare_workers' || provider === 'cloudflare_pages' || provider === 'vercel' || provider === 'netlify'
+}
 
 export const getSesClientConfigNode = (sesConfig: ModuleOptions['ses']): SESv2ClientConfig => {
   let clientConfig = sesConfig?.clientConfig || {}

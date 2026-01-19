@@ -1,6 +1,6 @@
 import type { SentMessageInfo } from 'nodemailer'
 import type { EmailOptions, ModuleOptions } from '../../../types'
-import { useRuntimeConfig } from 'nitropack/runtime'
+import { isEdgeEnvironment } from '../utils/compatibility'
 
 /**
  * Sends an email using the SES transport.
@@ -12,7 +12,7 @@ import { useRuntimeConfig } from 'nitropack/runtime'
  */
 export const sendSes = async (sesConfig: ModuleOptions['ses'], options: EmailOptions): Promise<SentMessageInfo> => {
   try {
-    if (useRuntimeConfig().transportMailer.edge) {
+    if (isEdgeEnvironment()) {
       const { sendSesEdge } = await import('./ses.edge')
       return await sendSesEdge(sesConfig, options)
     }
