@@ -70,7 +70,7 @@ export default defineNuxtModule<ModuleOptions>({
       },
     )
 
-    setupServerApi(options, nuxt, resolver)
+    setupServerApi(nuxt.options.runtimeConfig.transportMailer as ModuleOptions, nuxt, resolver)
 
     addServerImportsDir(resolver.resolve('./runtime/server/utils'))
     addImportsDir(resolver.resolve('./runtime/composables'))
