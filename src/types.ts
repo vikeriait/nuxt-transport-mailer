@@ -120,6 +120,12 @@ export interface TransportMailerError {
   data?: unknown
 }
 
+export interface TransportMailerResponse {
+  success: boolean
+  message?: string
+  result?: SentMessageInfo
+}
+
 export type SMTPOptions = SMTPConnection.Options | WorkerMailerOptions
 export type EmailOptions = SESTransport.MailOptions | WorkerMailerEmailOptions | SendEmailRequest
 

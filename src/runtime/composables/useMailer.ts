@@ -1,10 +1,8 @@
 import { type Ref, ref } from 'vue'
 import { useRuntimeConfig } from '#app'
-import type { EmailOptions, ModuleOptions } from '../../types'
+import type { EmailOptions, ModuleOptions, TransportMailerResponse } from '../../types'
 import type { FetchError } from 'ofetch'
 import type { EmailBody } from '../../../src/runtime/server/utils/schemas'
-import type SMTPTransport from 'nodemailer/lib/smtp-transport'
-import type SESTransport from 'nodemailer/lib/ses-transport'
 
 /**
  * Client-side composable for sending emails via the configured server API endpoint.
@@ -22,7 +20,7 @@ export function useMailer() {
   const config = useRuntimeConfig().public.transportMailer as ModuleOptions
   const apiRoute = config.serverApi?.route || '/api/mail/send'
 
-  const data: Ref<SMTPTransport.SentMessageInfo | SESTransport.SentMessageInfo | undefined> = ref(undefined)
+  const data: Ref<TransportMailerResponse | undefined> = ref(undefined)
   const pending: Ref<boolean> = ref(false)
   const error: Ref<FetchError | null> = ref(null)
 

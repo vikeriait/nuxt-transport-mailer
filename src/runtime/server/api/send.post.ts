@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { useRuntimeConfig } from 'nitropack/runtime'
 import { sendMail } from '../utils/mail'
 import { verifyCaptcha } from '../utils/captcha'
-import type { ModuleOptions } from '../../../types'
+import type { ModuleOptions, TransportMailerResponse } from '../../../types'
 import type { EmailBody } from '../../../runtime/server/utils/schemas'
 
 /**
@@ -16,7 +16,7 @@ import type { EmailBody } from '../../../runtime/server/utils/schemas'
  * @returns An object indicating success and the result of the email transport.
  * @throws H3Error (400 for validation failures, 500 for transport failures).
  */
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<TransportMailerResponse> => {
   const config = useRuntimeConfig().transportMailer as ModuleOptions
   const security = config.security
 
