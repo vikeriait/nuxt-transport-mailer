@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.2.1
+
+[compare changes](https://github.com/vikeriait/nuxt-transport-mailer/compare/v1.2.0...v1.2.1)
+
+### 🩹 Fixes
+
+- **types:** Api response type ([cb70517](https://github.com/vikeriait/nuxt-transport-mailer/commit/cb70517))
+
+### ❤️ Contributors
+
+- Matteo Di Ninno <matteo.dininno@vikeria.it>
+
 ## v1.2.0
 
 [compare changes](https://github.com/vikeriait/nuxt-transport-mailer/compare/v1.1.2...v1.2.0)

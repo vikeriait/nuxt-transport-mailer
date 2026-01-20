@@ -1,6 +1,6 @@
 {
   "name": "@vikeriait/nuxt-transport-mailer",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Robust Nuxt module for sending emails with Nodemailer, featuring built-in API, Zod validation, Captcha protection, and Rate Limiting.",
   "homepage": "https://nuxt-transport-mailer.vikeria.it",
   "repository": {
