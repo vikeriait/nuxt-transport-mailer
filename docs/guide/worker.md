@@ -9,7 +9,7 @@ The client side does not change: `useMailer` calls the same route with the same 
 Import the handler from the `/worker` entry and call it from your Worker `fetch`:
 
 ```ts [worker/index.ts]
-import { createMailHandler } from '@vikeriait/nuxt-transport-mailer/worker'
+import { createMailHandler, sesTransport } from '@vikeriait/nuxt-transport-mailer/worker'
 
 interface Env {
   CONTACT_EMAIL: string
@@ -23,14 +23,13 @@ interface Env {
 const mail = createMailHandler((env: Env) => ({
   to: env.CONTACT_EMAIL,
   from: env.MAIL_FROM,
-  driver: 'ses',
-  ses: {
+  transport: sesTransport({
     clientConfig: {
       accessKeyId: env.SES_ACCESS_KEY_ID,
       secretAccessKey: env.SES_SECRET_ACCESS_KEY,
       region: 'eu-west-1',
     },
-  },
+  }),
   captcha: {
     provider: 'turnstile',
     secretKey: env.TURNSTILE_SECRET_KEY,
@@ -70,11 +69,29 @@ Keep `serverApi.enabled: false` in `nuxt.config.ts`: the endpoint is served by t
 |---|---|---|
 | Recipients and sender | From the request body, `defaults.from` as fallback | Fixed in the configuration; `to`, `from`, `cc`, `bcc` in the body are ignored |
 | Accepted body fields | All email options | `subject`, `text`, `html`, `replyTo`, `captchaToken`, `_gotcha` |
-| Drivers | `smtp`, `ses`, `stream` | `ses`, `smtp` (Edge transports only) |
+| Transports | `driver`: `smtp`, `ses`, `stream` | `transport`: `sesTransport()`, `smtpTransport()` (Edge only), or your own |
 | Rate limiting | `nuxt-security` | Workers `ratelimits` binding, keyed by `cf-connecting-ip` |
 | Success result | Full `SentMessageInfo` | `{ messageId }` only |
 | Transport failure | `500` with the transport message | `502 Failed to send email`; the detail goes to the Worker logs |
 | Hooks | `transport:send:before`, `transport:send:after` | `onSent` |
+
+## Transports
+
+Only the transport you import is bundled: a Worker using `sesTransport` does not ship `worker-mailer`.
+
+A custom transport is an object with a `name` (used in logs) and a `send` function returning the message id:
+
+```ts
+const transport: MailTransport = {
+  name: 'resend',
+  send: async (options) => {
+    const response = await fetch('https://api.resend.com/emails', { /* ... */ })
+    return { messageId: (await response.json()).id }
+  },
+}
+```
+
+`send` receives the fixed `from` and `to`, and `subject`, `text`, `html`, `replyTo` from the request.
 
 ::: warning SMTP
 SMTP on Edge uses `worker-mailer`, which relies on Cloudflare's `connect()` API. Measure the CPU time on your plan before relying on it.
@@ -87,9 +104,7 @@ SMTP on Edge uses `worker-mailer`, which relies on Cloudflare's `connect()` API.
 | `route` | `string` | `'/api/mail/send'` | Path served by the handler. |
 | `to` | `string \| string[]` | — | Fixed recipients. |
 | `from` | `string` | — | Fixed sender. |
-| `driver` | `'ses' \| 'smtp'` | — | Transport. |
-| `ses` | `{ endpoint?, clientConfig }` | — | `aws4fetch` client configuration. Required with `driver: 'ses'`. |
-| `smtp` | `WorkerMailerOptions` | — | `worker-mailer` options. Required with `driver: 'smtp'`. |
+| `transport` | `MailTransport` | — | `sesTransport({ endpoint?, clientConfig })` (`aws4fetch`) or `smtpTransport(options)` (`worker-mailer`). |
 | `captcha` | `{ provider, secretKey }` | — | `turnstile`, `recaptcha` or `hcaptcha`. Omit to disable. |
 | `rateLimiter` | `{ limit({ key }) }` | — | Workers rate limiting binding. Omit to disable. |
 | `maxBodyLength` | `number` | `65536` | Maximum length of the raw body, in characters (`413` above it). |

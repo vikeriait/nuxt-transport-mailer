@@ -216,13 +216,12 @@ For static sites on Cloudflare, the endpoint can run in a plain Worker instead o
 
 ```typescript
 // worker/index.ts
-import { createMailHandler } from '@vikeriait/nuxt-transport-mailer/worker'
+import { createMailHandler, sesTransport } from '@vikeriait/nuxt-transport-mailer/worker'
 
 const mail = createMailHandler((env: Env) => ({
   to: env.CONTACT_EMAIL,
   from: env.MAIL_FROM,
-  driver: 'ses',
-  ses: { clientConfig: { accessKeyId: env.SES_ACCESS_KEY_ID, secretAccessKey: env.SES_SECRET_ACCESS_KEY, region: 'eu-west-1' } },
+  transport: sesTransport({ clientConfig: { accessKeyId: env.SES_ACCESS_KEY_ID, secretAccessKey: env.SES_SECRET_ACCESS_KEY, region: 'eu-west-1' } }),
   captcha: { provider: 'turnstile', secretKey: env.TURNSTILE_SECRET_KEY },
   rateLimiter: env.MAIL_RATE_LIMITER,
 }))

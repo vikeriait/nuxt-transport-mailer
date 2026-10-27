@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { createMailHandler, type MailHandlerConfig } from '../src/runtime/worker'
+import { createMailHandler, sesTransport, type MailHandlerConfig } from '../src/runtime/worker'
 
 const globalFetch = vi.fn()
 vi.stubGlobal('fetch', globalFetch)
@@ -7,14 +7,13 @@ vi.stubGlobal('fetch', globalFetch)
 const baseConfig: MailHandlerConfig = {
   to: 'owner@example.com',
   from: 'Site <noreply@example.com>',
-  driver: 'ses',
-  ses: {
+  transport: sesTransport({
     clientConfig: {
       accessKeyId: 'key',
       secretAccessKey: 'secret',
       region: 'eu-west-1',
     },
-  },
+  }),
   captcha: {
     provider: 'turnstile',
     secretKey: 'captcha-secret',
@@ -186,6 +185,22 @@ describe('createMailHandler', () => {
     expect(ses.Destination.BccAddresses).toBeUndefined()
     expect(ses.ReplyToAddresses).toEqual(['visitor@example.com'])
     expect(ses.Content.Simple.Subject.Data).toBe('Hello')
+  })
+
+  it('accepts a custom transport', async () => {
+    const send = vi.fn().mockResolvedValue({ messageId: 'custom-id' })
+    const handler = createMailHandler(() => ({ ...baseConfig, captcha: undefined, transport: { name: 'custom', send } }))
+
+    const response = await handler(post({ ...validBody, to: 'victim@example.com' }), {})
+
+    await expect(response?.json()).resolves.toEqual({ success: true, result: { messageId: 'custom-id' } })
+    expect(send).toHaveBeenCalledWith({
+      from: 'Site <noreply@example.com>',
+      to: 'owner@example.com',
+      subject: 'Hello',
+      html: '<p>Message</p>',
+      replyTo: 'visitor@example.com',
+    })
   })
 
   it('returns only the message id', async () => {

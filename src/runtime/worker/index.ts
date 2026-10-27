@@ -37,23 +37,10 @@ export interface MailHandlerConfig {
   from: string
 
   /**
-   * The driver to use for sending emails. Only Edge transports are available.
+   * The transport used to send emails: `sesTransport(...)` or `smtpTransport(...)`.
+   * Only the transport you import ends up in the Worker bundle.
    */
-  driver: 'ses' | 'smtp'
-
-  /**
-   * SES configuration, required when `driver` is 'ses'.
-   */
-  ses?: {
-    endpoint?: string
-    clientConfig: ConstructorParameters<typeof AwsClient>[0]
-  }
-
-  /**
-   * SMTP configuration, required when `driver` is 'smtp'.
-   * WARNING: SMTP on Edge is currently only supported on Cloudflare.
-   */
-  smtp?: WorkerMailerOptions
+  transport: MailTransport
 
   /**
    * Captcha verification. Omit it to disable the check.
@@ -85,6 +72,35 @@ export interface MailHandlerConfig {
    * logged and does not turn the response into a failure: the email is already sent.
    */
   onSent?: (info: { messageId: string, request: Request, body: MailHandlerBody }) => void | Promise<void>
+}
+
+/**
+ * Sends a validated email and returns its message id.
+ */
+export interface MailTransport {
+  name: string
+  send: (options: EmailOptions) => Promise<{ messageId: string }>
+}
+
+/**
+ * Amazon SES transport, via `aws4fetch`.
+ *
+ * @param ses - The SES configuration.
+ * @param ses.endpoint - Optional custom SES endpoint.
+ * @param ses.clientConfig - The `aws4fetch` client configuration (credentials, region).
+ */
+export function sesTransport(ses: { endpoint?: string, clientConfig: ConstructorParameters<typeof AwsClient>[0] }): MailTransport {
+  return { name: 'ses', send: options => sendSesEdge(ses, options) }
+}
+
+/**
+ * SMTP transport, via `worker-mailer`.
+ * WARNING: SMTP on Edge is currently only supported on Cloudflare (`connect()` API).
+ *
+ * @param smtp - The `worker-mailer` options.
+ */
+export function smtpTransport(smtp: WorkerMailerOptions): MailTransport {
+  return { name: 'smtp', send: options => sendSmtpEdge(smtp, options) }
 }
 
 /**
@@ -166,14 +182,11 @@ export function createMailHandler<Env>(resolveConfig: (env: Env) => MailHandlerC
 
     let messageId: string
     try {
-      const info = config.driver === 'ses'
-        ? await sendSesEdge(config.ses, options)
-        : await sendSmtpEdge(config.smtp!, options)
-      messageId = info.messageId
+      messageId = (await config.transport.send(options)).messageId
     }
     catch (e) {
       // Transport details go to the Worker logs, not to the visitor.
-      console.error(`[nuxt-transport-mailer] ${config.driver} transport failed: ${(e as Error).message ?? e}`)
+      console.error(`[nuxt-transport-mailer] ${config.transport.name} transport failed: ${(e as Error).message ?? e}`)
       return error(502, 'Failed to send email')
     }
 
