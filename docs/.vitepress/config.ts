@@ -29,6 +29,7 @@ export default defineConfig({
           { text: 'Configuration', link: '/guide/configuration' },
           { text: 'Usage', link: '/guide/usage' },
           { text: 'Security', link: '/guide/security' },
+          { text: 'Cloudflare Worker', link: '/guide/worker' },
         ],
       },
       {

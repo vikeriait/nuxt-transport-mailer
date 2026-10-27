@@ -1,5 +1,5 @@
 import type { SentMessageInfo } from 'nodemailer'
-import { toWorkerMailerConfig, toWorkerMailerMailOptions } from '../utils/compatibility'
+import { toWorkerMailerConfig, toWorkerMailerMailOptions } from '../utils/converters'
 import type { EmailOptions, SMTPOptions } from '../../../types'
 
 /**

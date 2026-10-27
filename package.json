@@ -13,6 +13,10 @@
     ".": {
       "types": "./dist/types.d.mts",
       "import": "./dist/module.mjs"
+    },
+    "./worker": {
+      "types": "./dist/runtime/worker/index.d.ts",
+      "import": "./dist/runtime/worker/index.js"
     }
   },
   "main": "./dist/module.mjs",
@@ -20,6 +24,9 @@
     "*": {
       ".": [
         "./dist/types.d.mts"
+      ],
+      "worker": [
+        "./dist/runtime/worker/index.d.ts"
       ]
     }
   },

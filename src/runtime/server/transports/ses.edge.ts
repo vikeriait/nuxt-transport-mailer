@@ -1,7 +1,7 @@
 import { AwsClient } from 'aws4fetch'
 import type { EmailOptions, ModuleOptions } from '../../../types'
 import type { SendEmailRequest } from '@aws-sdk/client-sesv2'
-import { toSESMailOptions, getSesClientConfigEdge } from '../utils/compatibility'
+import { toSESMailOptions, getSesClientConfigEdge } from '../utils/converters'
 import type { SentMessageInfo } from 'nodemailer'
 
 /**

@@ -210,6 +210,32 @@ export default defineEventHandler(async (event) => {
 })
 ```
 
+### Cloudflare Worker
+
+For static sites on Cloudflare, the endpoint can run in a plain Worker instead of the Nitro server, within the CPU limits of the Workers Free plan. `useMailer` does not change. Recipients and sender are fixed in the configuration and ignored in the request body.
+
+```typescript
+// worker/index.ts
+import { createMailHandler } from '@vikeriait/nuxt-transport-mailer/worker'
+
+const mail = createMailHandler((env: Env) => ({
+  to: env.CONTACT_EMAIL,
+  from: env.MAIL_FROM,
+  driver: 'ses',
+  ses: { clientConfig: { accessKeyId: env.SES_ACCESS_KEY_ID, secretAccessKey: env.SES_SECRET_ACCESS_KEY, region: 'eu-west-1' } },
+  captcha: { provider: 'turnstile', secretKey: env.TURNSTILE_SECRET_KEY },
+  rateLimiter: env.MAIL_RATE_LIMITER,
+}))
+
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+    return await mail(request, env, ctx) ?? new Response('Not Found', { status: 404 })
+  },
+}
+```
+
+See the [Cloudflare Worker guide](https://nuxt-transport-mailer.vikeria.it/guide/worker) for the full options and the differences from the server API.
+
 ## Security & Validation
 
 > [!IMPORTANT]
