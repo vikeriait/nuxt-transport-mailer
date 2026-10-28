@@ -1,6 +1,30 @@
 # Changelog
 
 
+## v1.3.0
+
+[compare changes](https://github.com/vikeriait/nuxt-transport-mailer/compare/v1.2.1...v1.3.0)
+
+### 🚀 Enhancements
+
+- **worker:** Add standalone Cloudflare Worker mail handler ([b05e1df](https://github.com/vikeriait/nuxt-transport-mailer/commit/b05e1df))
+
+### 🩹 Fixes
+
+- **types:** Api response type ([cb70517](https://github.com/vikeriait/nuxt-transport-mailer/commit/cb70517))
+
+### 💅 Refactors
+
+- **worker:** Inject the transport instead of selecting a driver ([c0f6ea5](https://github.com/vikeriait/nuxt-transport-mailer/commit/c0f6ea5))
+
+### 🏡 Chore
+
+- **release:** V1.2.1 ([66751c8](https://github.com/vikeriait/nuxt-transport-mailer/commit/66751c8))
+
+### ❤️ Contributors
+
+- Matteo Di Ninno <mail@matteodininno.it>
+
 ## v1.2.1
 
 [compare changes](https://github.com/vikeriait/nuxt-transport-mailer/compare/v1.2.0...v1.2.1)
